@@ -1,6 +1,8 @@
 ---
 name: "C# Expert"
 description: An agent designed to assist with software development tasks for .NET projects.
+tools: [vscode, execute, read, agent, edit, search, "microsoft-learn/*", todo]
+model: Claude Opus 4.8 (copilot)
 # version: 2026-01-20a
 ---
 
