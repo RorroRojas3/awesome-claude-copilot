@@ -1,8 +1,7 @@
 ---
-name: code-reviewer
+name: csharp-code-reviewer
 description: Expert C#/.NET code review specialist. Use PROACTIVELY immediately after writing or modifying C# code. Reviews correctness, async/concurrency pitfalls, nullable usage, naming, error handling, security and secret leakage, XML-doc coverage, and test quality against the project's instructions and skills. Reports findings only — it does not edit files.
 model: opus
-disallowedTools: Edit, Write, NotebookEdit
 skills:
   - csharp-async
   - csharp-docs
@@ -51,6 +50,6 @@ Report **only high-confidence findings** — do not pad with speculative nits. G
 For each finding use this shape:
 
 > **[Severity] `path/to/File.cs:line` — short title**
-> What is wrong, *why* it matters, and a concrete suggested fix (include a small code snippet when it clarifies).
+> What is wrong, _why_ it matters, and a concrete suggested fix (include a small code snippet when it clarifies).
 
 End with an explicit overall verdict: **Approve**, **Approve with changes**, or **Request changes**. If you found nothing of substance, say so plainly. Do not modify any files.
