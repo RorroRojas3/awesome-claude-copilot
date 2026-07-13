@@ -1,17 +1,10 @@
 # awesome-claude-copilot
 
-A curated, reusable collection of **AI coding-assistant configuration for C#/.NET**, packaged for **two assistants side by side**:
+A curated, reusable **[Claude Code](https://code.claude.com)** configuration for **C#/.NET back ends and Angular front ends**, packaged so you can drop it into your own repository.
 
-- **[Claude Code](https://code.claude.com)** — configured under [`.claude/`](.claude/)
-- **[GitHub Copilot](https://github.com/features/copilot) (VS Code)** — configured under [`.github/`](.github/)
+There is no application source code here. This repo is purely a portable set of assistant configuration — project memory, path-scoped rules, skills, subagents, and MCP servers — that encodes a team's standards once instead of re-explaining them in every prompt.
 
-The two trees are **independent**. Each one implements the same C#/.NET best practices using its own platform's native mechanisms (memory, rules, skills, agents, MCP). Adopt either tree on its own, or use both. There is no application source code here — this repo is purely a portable set of assistant configs you drop into your own projects.
-
----
-
-## Why this exists
-
-C#/.NET guidance (async, nullable reference types, validation, logging/security, XML docs, testing, plus framework specifics for ASP.NET Core, Blazor, Azure Functions, and MCP servers) is encoded once as best-practice rules, then wired into each assistant so it is applied automatically — instead of being re-explained in every prompt. The result is consistent, opinionated, production-oriented C# across your team and tools.
+> Earlier revisions also shipped a parallel GitHub Copilot (`.github/`) tree. It was removed in favour of a single Claude Code source of truth; the repo name is a leftover, not a promise.
 
 ---
 
@@ -19,9 +12,9 @@ C#/.NET guidance (async, nullable reference types, validation, logging/security,
 
 ```
 .
-├── .claude/                      # Claude Code configuration
-│   ├── CLAUDE.md                 # Always-loaded project memory: C# standards + delegation rules
-│   ├── rules/                    # Path-scoped rules (auto-apply when matching files are edited)
+├── .claude/
+│   ├── CLAUDE.md                 # Always-loaded project memory: C# + Angular standards, delegation rules
+│   ├── rules/                    # Path-scoped rules (auto-apply when a matching file is edited)
 │   │   ├── csharp.md                       → **/*.cs
 │   │   ├── aspnet-rest-apis.md             → **/*.cs, **/*.json
 │   │   ├── azure-functions-csharp.md       → **/*.cs, **/host.json, **/local.settings.json, **/*.csproj
@@ -30,102 +23,118 @@ C#/.NET guidance (async, nullable reference types, validation, logging/security,
 │   ├── skills/                   # Invokable skills (Skill tool)
 │   │   ├── csharp-async/SKILL.md
 │   │   ├── csharp-docs/SKILL.md
-│   │   └── csharp-xunit/SKILL.md
+│   │   ├── csharp-xunit/SKILL.md
+│   │   └── ngrx-signal-store/    # Progressive-disclosure skill (see below)
+│   │       ├── SKILL.md
+│   │       ├── sources.json                # pinned upstream doc shas + @ngrx/signals version
+│   │       ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
+│   │       └── references/                 # read on demand, not loaded up front
 │   ├── agents/                   # Subagents
-│   │   ├── code-reviewer.agent.md          # Opus, read-only C#/.NET review
+│   │   ├── csharp-code-reviewer.md         # Opus, read-only C#/.NET review
 │   │   └── se-technical-writer.agent.md    # Sonnet, writes docs under docs/
+│   ├── commands/                 # Slash commands
+│   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
 │   └── settings.json             # Model + MCP defaults
 │
-├── .github/                      # GitHub Copilot (VS Code) configuration
-│   ├── instructions/             # Custom instructions (applyTo globs, auto-apply in VS Code)
-│   │   ├── csharp.instructions.md
-│   │   ├── aspnet-rest-apis.instructions.md
-│   │   ├── azure-functions-csharp.instructions.md
-│   │   ├── blazor.instructions.md
-│   │   └── csharp-mcp-server.instructions.md
-│   ├── skills/                   # Mirror of the three skills
-│   │   ├── csharp-async/SKILL.md
-│   │   ├── csharp-docs/SKILL.md
-│   │   └── csharp-xunit/SKILL.md
-│   └── agents/                   # Custom Copilot agents / chat modes
-│       ├── CSharpExpert.agent.md           # C# Expert
-│       ├── csharp-mcp-expert.agent.md      # C# MCP Server Expert
-│       ├── PlannerExpert.md                # Plan agent (hands off to the experts)
-│       └── se-technical-writer.agent.md    # SE: Tech Writer
-│
-├── .mcp.json                     # MCP servers for Claude Code
-└── .vscode/mcp.json              # MCP servers for VS Code / Copilot (mirror of .mcp.json)
+└── .mcp.json                     # MCP servers
 ```
-
----
-
-## The two trees at a glance
-
-| Concept | Claude Code (`.claude/`) | GitHub Copilot (`.github/`) |
-| --- | --- | --- |
-| Always-on guidance | `CLAUDE.md` (auto-loaded as memory) | `instructions/*.instructions.md` (auto-applied by VS Code) |
-| File-scoped rules | `rules/*.md` with `paths:` frontmatter (load when matching files are edited) | `instructions/*.instructions.md` with `applyTo:` globs |
-| Reusable knowledge | `skills/<name>/SKILL.md` (Skill tool) | `skills/<name>/SKILL.md` |
-| Specialized agents | `agents/*.agent.md` subagents | `agents/*.agent.md` custom agents (with handoffs) |
-| MCP servers | `.mcp.json` (`enableAllProjectMcpServers` in `settings.json`) | `.vscode/mcp.json` |
-
-Both trees cover the **same C#/.NET domain**; only the mechanism differs.
 
 ---
 
 ## What's covered
 
-**Cross-cutting C# standards** (latest C# / C# 14): file-scoped namespaces, pattern matching, `nameof`; PascalCase/camelCase and `I`-prefixed interfaces; nullable reference types with `is null` / `is not null`; async (`Async` suffix, no `.Result`/`.Wait()`/`async void`, `CancellationToken`, `ConfigureAwait(false)`); validation (FluentValidation/DataAnnotations) and Problem Details (RFC 9457); `ILogger<T>` structured logging, never logging PII/secrets, `DefaultAzureCredential` + Key Vault; XML doc comments; xUnit testing conventions.
+**C#/.NET** (latest C# / C# 14): file-scoped namespaces, pattern matching, `nameof`; PascalCase/camelCase and `I`-prefixed interfaces; nullable reference types with `is null` / `is not null`; async (`Async` suffix, no `.Result`/`.Wait()`/`async void`, `CancellationToken`, `ConfigureAwait(false)`); validation (FluentValidation/DataAnnotations) and Problem Details (RFC 9457); `ILogger<T>` structured logging, never logging PII/secrets, `DefaultAzureCredential` + Key Vault; XML doc comments; xUnit conventions.
 
-**Framework-specific guidance:**
+Framework specifics live in `.claude/rules/`, which auto-load when you edit a matching file:
 
-| Topic | Claude rule | Copilot instruction |
-| --- | --- | --- |
-| General C# | `csharp.md` | `csharp.instructions.md` |
-| ASP.NET Core REST APIs | `aspnet-rest-apis.md` | `aspnet-rest-apis.instructions.md` |
-| Azure Functions (isolated worker) | `azure-functions-csharp.md` | `azure-functions-csharp.instructions.md` |
-| Blazor | `blazor.md` | `blazor.instructions.md` |
-| MCP servers in C# | `csharp-mcp-server.md` | `csharp-mcp-server.instructions.md` |
+| Topic | Rule |
+| --- | --- |
+| General C# | `csharp.md` |
+| ASP.NET Core REST APIs | `aspnet-rest-apis.md` |
+| Azure Functions (isolated worker) | `azure-functions-csharp.md` |
+| Blazor | `blazor.md` |
+| MCP servers in C# | `csharp-mcp-server.md` |
 
-**Skills** (shared by both trees): `csharp-async`, `csharp-docs`, `csharp-xunit`.
+**Angular**: NgRx Signal Store state management — see below.
+
+**Skills**: `csharp-async`, `csharp-docs`, `csharp-xunit`, `ngrx-signal-store`.
+
+---
+
+## Angular / NgRx Signal Store
+
+`ngrx-signal-store` is the most involved skill here, and the only self-updating one.
+
+It uses **progressive disclosure**. `SKILL.md` is short and loads whenever the skill triggers: the mental model, the production defaults (keep `protectedState` on, inject via default parameters, standalone state updaters), the decision rules that are easiest to get wrong (`signalState` vs `signalStore`; `rxMethod` vs `signalMethod` vs a plain method; when a custom feature or the Events plugin is actually warranted), and the traps — including that `withDevtools` is *not* part of core NgRx, a common hallucination.
+
+Everything else sits in `references/` and is read only when the task calls for it:
+
+| Reference | Read when |
+| --- | --- |
+| `store-composition.md` | Authoring or reshaping a store's structure |
+| `async-and-rxjs.md` | The store talks to HTTP or any async source |
+| `entity-management.md` | State holds a keyed collection |
+| `custom-features.md` | Logic repeats across stores |
+| `testing.md` | Writing or fixing store tests |
+| `events-plugin.md` | Event-based state, or several stores reacting to one event |
+| `recipes.md` | Starting a new store from a known-good shape |
+| `api-reference.md` | Checking a signature, import path, or entry point |
+
+### Keeping it current
+
+NgRx guidance goes stale, and a skill that confidently teaches last year's API is worse than no skill. So the skill is **pinned** to a snapshot of the upstream docs in `sources.json` — a blob sha per doc page, the `@ngrx/signals` version it was written against, and a `mapsTo` list saying which reference file each upstream page feeds.
+
+```bash
+# Is the skill still current? Exit 0 = yes, 10 = drifted, 1 = check failed.
+node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs
+```
+
+The check costs a handful of unauthenticated HTTP requests (set `GITHUB_TOKEN` to raise the 60/hour limit; a weekly cadence never approaches it). Run the whole refresh through the slash command:
+
+```
+/ngrx-signals-sync              # check, and update the skill if upstream moved
+/ngrx-signals-sync --check-only # report drift without editing anything
+```
+
+When nothing has changed it prints one line and stops. When something has, it fetches only the changed pages, propagates the substantive differences into the reference files named by `mapsTo`, re-pins the shas, and **leaves the edits in the working tree for you to review** — it never commits. This repo *is* the guidance, and there are no tests that would catch a bad semantic diff, so a human approves it.
+
+To run it on a schedule, drive the command from a loop:
+
+```
+/loop 7d /ngrx-signals-sync
+```
+
+A `/loop` only fires while a Claude Code session is open, so treat it as a convenience rather than a guarantee. Because all the logic lives in the command and the script, the same refresh can be driven by `/schedule` as a real cron routine, or by CI (fail the job on exit code 10), without changing the skill.
+
+> The docs are fetched from the markdown behind `ngrx.io` (`ngrx/platform`, `projects/www/src/app/pages/guide/signals/`). `ngrx.io` itself is a JavaScript SPA and cannot be scraped — fetching it returns an empty nav shell, which is why the pipeline points at the source repo.
 
 ---
 
 ## MCP servers
 
-Both `.mcp.json` (Claude Code) and `.vscode/mcp.json` (Copilot) configure the same servers:
+Configured in `.mcp.json`; `.claude/settings.json` sets `enableAllProjectMcpServers: true`.
 
 | Server | Transport | Use |
 | --- | --- | --- |
 | `microsoft-learn` | HTTP (`https://learn.microsoft.com/api/mcp`) | Ground .NET/Azure answers in official Microsoft Learn docs |
-| `terraform` | stdio (Docker: `hashicorp/terraform-mcp-server`) | Terraform / infrastructure-as-code |
-| `angular-cli` | stdio (`npx @angular/cli mcp`) | Angular front-end work |
+| `angular-cli` | stdio (`npx @angular/cli mcp`) | Ground Angular answers in the installed Angular version |
+| `terraform` | stdio (Docker: `hashicorp/terraform-mcp-server`) | Infrastructure-as-code |
 
 ---
 
 ## Getting started
 
-### Claude Code
+1. Copy [`.claude/`](.claude/) and [`.mcp.json`](.mcp.json) into the root of your repository.
+2. Start Claude Code there. It loads `.claude/CLAUDE.md` every session, and the matching `.claude/rules/*.md` whenever you edit a relevant file.
+3. The skills, the `csharp-code-reviewer` and `se-technical-writer` subagents, and the `/ngrx-signals-sync` command become available. Delegation is described in `CLAUDE.md`: after changing C#, `csharp-code-reviewer` reviews it (read-only); new features or implementation notes go to `se-technical-writer`, which writes Markdown under `docs/`.
 
-1. Copy the [`.claude/`](.claude/) directory and [`.mcp.json`](.mcp.json) into the root of your C#/.NET repository.
-2. Start Claude Code in that repo. It automatically loads `.claude/CLAUDE.md` (every session) and the matching `.claude/rules/*.md` whenever you edit a relevant file.
-3. The `code-reviewer` (Opus) and `se-technical-writer` subagents and the three skills become available. Delegation is described in `CLAUDE.md`:
-   - after changing C# → `code-reviewer` reviews it (read-only, reports findings),
-   - new features / implementation notes → `se-technical-writer` writes Markdown under `docs/`.
-
-> MCP: `.claude/settings.json` sets `enableAllProjectMcpServers: true`, so the servers in `.mcp.json` are enabled for the project.
-
-### GitHub Copilot (VS Code)
-
-1. Copy the [`.github/`](.github/) directory and [`.vscode/mcp.json`](.vscode/mcp.json) into the root of your repository.
-2. In VS Code with GitHub Copilot, the `instructions/*.instructions.md` files apply automatically to files matching their `applyTo` globs.
-3. Select a custom agent (C# Expert, C# MCP Server Expert, Plan, SE: Tech Writer) in Copilot Chat. The **Plan** agent can hand off to the implementation agents.
+Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has no dependencies).
 
 ---
 
 ## Conventions for contributors
 
-- **Keep the trees in sync where it makes sense.** The skills and the C#/.NET guidance exist in both `.claude/` and `.github/`; when you change guidance in one, mirror the intent in the other using that platform's mechanism (Claude `rules/` `paths:` ↔ Copilot `instructions/` `applyTo:`).
 - **Rules:** a `.claude/rules/*.md` file with a `paths:` block list applies only to matching files; without `paths:` it loads at launch for every session.
-- **Subagents:** `.claude/agents/*.agent.md` frontmatter uses comma-separated `tools`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), and optional `skills:`/`mcpServers:` lists. `.github/agents/` uses Copilot's agent schema (tool IDs, `handoffs`, etc.).
-- **Skills:** one folder per skill containing `SKILL.md` with `name` and `description` frontmatter.
+- **Subagents:** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), and either a comma-separated `tools` list or a `skills:` list.
+- **Skills:** one folder per skill containing `SKILL.md` with `name` and `description` frontmatter. Keep `SKILL.md` under ~500 lines; anything longer belongs in `references/`, pointed to from a table that says *when* to read each file.
+- **Never hand-edit the shas in `sources.json`.** They are machine-maintained — run `node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs --pin`.
