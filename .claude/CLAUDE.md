@@ -6,8 +6,8 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 
 - `CLAUDE.md` — this file (always-on standards + delegation rules).
 - `rules/` — detailed standards that **auto-apply by file type** (see [Detailed standards](#detailed-standards--clauderules)).
-- `skills/` — invokable best-practice skills (`csharp-async`, `csharp-docs`, `csharp-xunit`, `ngrx-signal-store`).
-- `agents/` — subagents (`csharp-code-reviewer`, `se-technical-writer`).
+- `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ngrx-signal-store`).
+- `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `se-technical-writer`).
 - `commands/` — slash commands (`/ngrx-signals-sync`).
 - `settings.json` and `.mcp.json` (repo root) — model and MCP server configuration.
 
@@ -75,7 +75,7 @@ Apply these to all C# you write or review. The detailed source of truth is in `.
 - Reach for `rxMethod` (not `signalMethod`) whenever requests can overlap — `switchMap` is what prevents a stale response overwriting a fresh one.
 - One store per entity type; use `withEntities` for keyed collections.
 - This is **not** classic NgRx: no actions, reducers, or effects unless the Events plugin is a deliberate choice.
-- For Angular questions that are not about state, query the `angular-cli` MCP server instead of relying on memory.
+- For Angular questions that are not about state, use the `angular-developer` skill and the `angular-cli` MCP server instead of relying on memory.
 
 ## Skills
 
@@ -84,6 +84,7 @@ Available via the Skill tool:
 - `csharp-async` — async/await best practices.
 - `csharp-docs` — XML documentation conventions.
 - `csharp-xunit` — xUnit unit-testing patterns.
+- `angular-developer` — the official Angular team agent skill (from <https://angular.dev/ai/agent-skills>, installed from `github.com/angular/skills`). General Angular implementation guidance with progressive disclosure: `SKILL.md` routes to `references/` files for components, signals (`linkedSignal`, `resource`, effects), forms (incl. Signal Forms), DI, routing/SSR, styling, and testing. For state management, `ngrx-signal-store` remains the source of truth.
 - `ngrx-signal-store` — NgRx Signal Store patterns for Angular. Uses progressive disclosure: `SKILL.md` carries the decision rules, and `references/` files (entities, async/RxJS, custom features, testing, events, recipes, API) are read only when needed. Pinned to a specific `@ngrx/signals` version and refreshed with `/ngrx-signals-sync`.
 
 ## Detailed standards — `.claude/rules/`
@@ -109,6 +110,7 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 ## Delegation rules
 
 - **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Opus, with the C# skills preloaded). It reports findings; it does not edit files.
+- **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Opus, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
 - **When a new feature is implemented, or implementation details need documenting**, delegate to the `se-technical-writer` subagent to author or update Markdown docs under `docs/` (create the folder if it does not exist).
 
 ## Common commands

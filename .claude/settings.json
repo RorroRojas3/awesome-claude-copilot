@@ -7,7 +7,11 @@
       "Bash(node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs)",
       "Bash(sed -i 's/\"blobSha\": \"89adb2557e0a788513e96ef2a9e44592f2d9b532\"/\"blobSha\": \"0000000000000000000000000000000000000000\"/' .claude/skills/ngrx-signal-store/sources.json)",
       "Bash(grep -c '```' \"C:/Users/Rorro/source/repos/awesome-claude-copilot/.claude/skills/ngrx-signal-store/references/store-composition.md\")",
-      "PowerShell(node .claude\\\\skills\\\\ngrx-signal-store\\\\scripts\\\\check-updates.mjs --json; echo \"exit=$LASTEXITCODE\")"
+      "PowerShell(node .claude\\\\skills\\\\ngrx-signal-store\\\\scripts\\\\check-updates.mjs --json; echo \"exit=$LASTEXITCODE\")",
+      "WebFetch(domain:angular.dev)",
+      "mcp__angular-cli__list_projects",
+      "mcp__angular-cli__get_best_practices",
+      "mcp__angular-cli__search_documentation"
     ]
   },
   "model": "fable",
