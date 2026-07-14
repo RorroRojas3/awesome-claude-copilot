@@ -49,7 +49,10 @@ export const BooksStore = signalStore(
   withEntities<Book>(),                         // ids + entityMap + computed entities
   withRequestStatus(),                          // reusable feature: pending / fulfilled / error
   withComputed(({ entities, order }) => ({
-    sortedBooks: () => /* plain fn — withComputed wraps it in computed() for you */,
+    sortedBooks: () => {                        // plain fn — withComputed wraps it in computed()
+      const dir = order() === 'asc' ? 1 : -1;
+      return entities().toSorted((a, b) => dir * a.title.localeCompare(b.title));
+    },
   })),
   withMethods((store, books = inject(BooksService)) => ({
     loadByQuery: rxMethod<string>(

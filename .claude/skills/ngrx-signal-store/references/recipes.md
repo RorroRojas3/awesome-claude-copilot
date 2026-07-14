@@ -236,7 +236,7 @@ For a submit button, swap `switchMap` for `exhaustMap` so double-clicks are igno
 `watchState` is synchronous and fires on every change, including the initial one — an `effect` reading `getState` is coalesced per tick and would miss intermediate values.
 
 ```ts
-import { getState, patchState, signalStore, watchState, withHooks, withState } from '@ngrx/signals';
+import { patchState, signalStore, watchState, withHooks, withMethods, withState } from '@ngrx/signals';
 
 const STORAGE_KEY = 'books-preferences';
 
@@ -268,34 +268,58 @@ export const PreferencesStore = signalStore(
 
 Also a `watchState` job, for the same reason: skipping intermediate states would corrupt the history stack.
 
+Two things make this correct. First, the watcher and the `undo`/`redo` methods share a `_restoring` flag — a plain mutable object in `withProps`, visible to both — so the writes that undo/redo themselves perform are not recorded as new history. Second, `_history` always holds the **current** state on top: `watchState` fires synchronously with the initial state, seeding the stack, so `undo()` pops the current state onto the redo stack and restores what is underneath.
+
 ```ts
-export function withUndoRedo<T extends object>() {
+// undo-redo.feature.ts
+import {
+  patchState,
+  signalStoreFeature,
+  type,
+  watchState,
+  withHooks,
+  withMethods,
+  withProps,
+} from '@ngrx/signals';
+
+export function withUndoRedo<State extends object>() {
   return signalStoreFeature(
-    { state: type<T>() },
+    { state: type<State>() },
     withProps(() => ({
-      _undoStack: [] as T[],
-      _redoStack: [] as T[],
+      _history: [] as State[],       // top of the stack is always the current state
+      _redoStack: [] as State[],
+      _restoring: { value: false },  // shared with the watcher in onInit
     })),
-    withMethods((store) => ({
-      undo(): void {
-        const previous = store._undoStack.pop();
-        if (!previous) return;
-        store._redoStack.push(getState(store) as T);
-        patchState(store, previous);
-      },
-      redo(): void {
-        const next = store._redoStack.pop();
-        if (!next) return;
-        store._undoStack.push(getState(store) as T);
-        patchState(store, next);
-      },
-    })),
+    withMethods((store) => {
+      const restore = (state: State) => {
+        store._restoring.value = true;
+        try {
+          patchState(store, state);
+        } finally {
+          store._restoring.value = false;
+        }
+      };
+
+      return {
+        undo(): void {
+          if (store._history.length < 2) return; // only the current state left
+          store._redoStack.push(store._history.pop()!);
+          restore(store._history[store._history.length - 1]);
+        },
+        redo(): void {
+          const next = store._redoStack.pop();
+          if (next === undefined) return;
+          store._history.push(next);
+          restore(next);
+        },
+      };
+    }),
     withHooks({
       onInit(store) {
-        let skip = false;
         watchState(store, (state) => {
-          if (skip) return;
-          store._undoStack.push(state as T);
+          if (store._restoring.value) return; // an undo/redo write — already in the stacks
+          store._history.push(state as State);
+          store._redoStack.length = 0;        // a fresh change invalidates redo
         });
       },
     }),
@@ -303,4 +327,6 @@ export function withUndoRedo<T extends object>() {
 }
 ```
 
-Guard the watcher against the writes that `undo`/`redo` themselves perform, or each undo pushes its own result back onto the stack and the history never unwinds.
+`watchState` is synchronous, so wrapping `patchState` with the flag in `try`/`finally` reliably covers the watcher call — nothing can interleave between the write and the check.
+
+This is deliberately minimal: no history cap, no per-slice tracking. Remember that `withUndoRedo` is **not** part of `@ngrx/signals` (see `references/api-reference.md`); the third-party `@angular-architects/ngrx-toolkit` ships a maintained implementation with those knobs, and this recipe exists to show the `watchState` mechanics.

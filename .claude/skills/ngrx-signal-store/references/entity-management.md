@@ -198,6 +198,11 @@ builds the config once, strongly typed (entity required; `collection` and `selec
 the same object goes to `withEntities` *and* to every updater. Prefer this whenever a collection is
 named or has a custom id.
 
+<!-- Deliberate divergence from the upstream entity-management.md page, whose entityConfig example
+     passes the whole `todo` to removeEntity. That does not compile: removeEntity's overloads take
+     an EntityId (modules/signals/entities/src/updaters/remove-entity.ts), never an entity object.
+     /ngrx-signals-sync: do not "fix" removeTodo back to the upstream form. -->
+
 ```ts
 import { patchState, signalStore, type, withMethods } from '@ngrx/signals';
 import {
@@ -221,8 +226,8 @@ export const TodosStore = signalStore(
     addTodo(todo: Todo): void {
       patchState(store, addEntity(todo, todoConfig));
     },
-    removeTodo(todo: Todo): void {
-      patchState(store, removeEntity(todo, todoConfig));
+    removeTodo(key: number): void {
+      patchState(store, removeEntity(key, todoConfig)); // removeEntity takes the id, not the entity
     },
   }))
 );

@@ -51,6 +51,9 @@ export function setError(error: string): RequestStatusState {
 }
 ```
 
+These return the partial state object directly; returning a `PartialStateUpdater<RequestStatusState>`
+instead (as in `references/recipes.md`) is equivalent — `patchState` accepts both forms.
+
 Consuming it, the entity update and the status update land in one atomic patch:
 
 ```ts

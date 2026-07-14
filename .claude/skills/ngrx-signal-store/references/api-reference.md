@@ -163,7 +163,7 @@ Opt-in Flux-style layer. See `references/events-plugin.md` for when it is warran
 | `provideDispatcher()` | Providers creating a **local** `Dispatcher` + `Events` scope at a component/route injector. |
 | `injectDispatch(eventCreators)` | Returns an object mirroring the creators, each member creating and dispatching its event. Call it as `dispatch({ scope }).someEvent(...)` to target another scope. |
 | `Events` | Injectable service; `on(...creators)` returns an observable of dispatched events filtered to those types. |
-| `ReducerEvents` | Like `Events`, but receives events **before** it — use it when a handler must run after reducers have already applied their state transitions. |
+| `ReducerEvents` | Like `Events`, but receives events **before** it — use it for state transitions that `withReducer` cannot express, so `Events`-based side effects still see the updated state. |
 | `EventScope` | The scope union: `'self'` (default), `'parent'`, `'global'`. |
 | `toScope(scope)` | Forwards a single returned event to the given scope. |
 | `mapToScope(scope)` | RxJS operator forwarding every event returned by a handler to the given scope. |

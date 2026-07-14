@@ -6,12 +6,13 @@
       "Bash(echo \"exit=$?\")",
       "Bash(node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs)",
       "Bash(sed -i 's/\"blobSha\": \"89adb2557e0a788513e96ef2a9e44592f2d9b532\"/\"blobSha\": \"0000000000000000000000000000000000000000\"/' .claude/skills/ngrx-signal-store/sources.json)",
-      "Bash(grep -c '```' \"C:/Users/Rorro/source/repos/awesome-claude-copilot/.claude/skills/ngrx-signal-store/references/store-composition.md\")"
+      "Bash(grep -c '```' \"C:/Users/Rorro/source/repos/awesome-claude-copilot/.claude/skills/ngrx-signal-store/references/store-composition.md\")",
+      "PowerShell(node .claude\\\\skills\\\\ngrx-signal-store\\\\scripts\\\\check-updates.mjs --json; echo \"exit=$LASTEXITCODE\")"
     ]
   },
-  "model": "opus",
+  "model": "fable",
   "availableModels": [
-    "opus"
+    "fable"
   ],
   "enableAllProjectMcpServers": true,
   "enabledPlugins": {

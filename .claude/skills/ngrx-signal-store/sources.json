@@ -48,7 +48,8 @@
       "blobSha": "fbb0d35769ed935fca59655511993768373048dd",
       "mapsTo": [
         "references/async-and-rxjs.md",
-        "references/api-reference.md"
+        "references/api-reference.md",
+        "references/recipes.md"
       ]
     },
     {
@@ -71,7 +72,8 @@
       "blobSha": "5a91f38e03e3866c5da0b5608fdb32b4777e5c80",
       "mapsTo": [
         "references/custom-features.md",
-        "references/api-reference.md"
+        "references/api-reference.md",
+        "references/recipes.md"
       ]
     },
     {
@@ -86,7 +88,8 @@
       "blobSha": "4ee1a7090a45c99a61723886399455b8b8c458ab",
       "mapsTo": [
         "references/entity-management.md",
-        "references/api-reference.md"
+        "references/api-reference.md",
+        "references/recipes.md"
       ]
     },
     {
@@ -130,7 +133,8 @@
       "path": "signal-store/state-tracking.md",
       "blobSha": "45610b5c605dd82963d69ff0b05a617db9e0e888",
       "mapsTo": [
-        "references/store-composition.md"
+        "references/store-composition.md",
+        "references/recipes.md"
       ]
     },
     {
