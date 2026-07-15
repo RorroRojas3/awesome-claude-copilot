@@ -20,6 +20,18 @@ tools:
   ]
 agents: ["Explore"]
 handoffs:
+  - label: "Implement: C# Expert"
+    agent: "C# Expert"
+    prompt: "Implement the approved plan above (also saved at /memories/session/plan.md) step by step. Load the skills named in the plan from .github/skills/ before coding, and report any deviations from the plan."
+    send: true
+  - label: "Implement: C# MCP Server Expert"
+    agent: "C# MCP Server Expert"
+    prompt: "Implement the approved MCP server plan above (also saved at /memories/session/plan.md) step by step. Load the skills named in the plan from .github/skills/ before coding."
+    send: true
+  - label: "Clean up: C#/.NET Janitor"
+    agent: "C#/.NET Janitor"
+    prompt: "Execute the approved cleanup/modernization plan above (also saved at /memories/session/plan.md) incrementally, validating with build and tests after each change."
+    send: true
   - label: Start Implementation
     agent: agent
     prompt: "Start implementation"
@@ -51,6 +63,8 @@ Cycle through these phases based on user input. This is iterative, not linear. I
 ## 1. Discovery
 
 Run the _Explore_ subagent to gather context, analogous existing features to use as implementation templates, and potential blockers or ambiguities. When the task spans multiple independent areas (e.g., frontend + backend, different features, separate repos), launch **2-3 _Explore_ subagents in parallel** — one per area — to speed up discovery.
+
+During discovery, also check `.github/skills/` (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `microsoft-agent-framework`, `ngrx-signal-store`) and name the relevant skills in the plan so the implementing agent loads them before coding. You may #tool:read a skill's `SKILL.md` yourself to ground design decisions.
 
 Update the plan with your findings.
 
@@ -92,6 +106,17 @@ On user input after showing the plan:
 Keep iterating until explicit approval or handoff.
 </workflow>
 
+<routing>
+Every plan targets exactly one implementation handoff. Pick it by the nature of the work:
+
+- **C# MCP Server Expert** — the plan builds or changes a Model Context Protocol server in C#: ModelContextProtocol / ModelContextProtocol.AspNetCore packages, `[McpServerTool]` / `[McpServerPrompt]` / `[McpServerResource]` attributes, stdio or HTTP transports, protocol debugging.
+- **C#/.NET Janitor** — the plan is cleanup, modernization, or tech-debt remediation on existing C# with behavior preserved: obsolete APIs, compiler warnings, formatting, nullable adoption, missing tests or docs, performance passes.
+- **C# Expert** — all other C#/.NET work: new features, ASP.NET Core APIs, Blazor, Azure Functions, EF Core, libraries, Microsoft Agent Framework solutions.
+- **Start Implementation** (generic) — anything outside those three: Angular/front-end work, mixed stacks, documentation-only changes.
+
+End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The C# implementation agents run their own code review via the `C# Code Reviewer` subagent — the plan does not need a separate review step.
+</routing>
+
 <plan_style_guide>
 
 ```markdown
@@ -120,6 +145,8 @@ Keep iterating until explicit approval or handoff.
 
 1. {Clarifying question with recommendation. Option A / Option B / Option C}
 2. {…}
+
+**Recommended agent**: {handoff label from <routing>}
 ```
 
 Rules:

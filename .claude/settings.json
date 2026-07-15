@@ -11,7 +11,10 @@
       "WebFetch(domain:angular.dev)",
       "mcp__angular-cli__list_projects",
       "mcp__angular-cli__get_best_practices",
-      "mcp__angular-cli__search_documentation"
+      "mcp__angular-cli__search_documentation",
+      "Bash(git mv *)",
+      "Bash(node -e ' *)",
+      "Bash(SCRATCH=C:/Users/Rorro/AppData/Local/Temp/claude/c--Users-Rorro-source-repos-awesome-claude-copilot/cc8dfcc7-f289-4a08-b8e7-2e71691d0168/scratchpad node -e ' *)"
     ]
   },
   "model": "fable",

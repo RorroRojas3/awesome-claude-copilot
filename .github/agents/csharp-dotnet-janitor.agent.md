@@ -3,6 +3,8 @@ description: "Perform janitorial tasks on C#/.NET code including cleanup, modern
 name: "C#/.NET Janitor"
 tools:
   [
+    agent,
+    vscode/memory,
     vscode/installExtension,
     vscode/newWorkspace,
     vscode/runCommand,
@@ -36,12 +38,26 @@ tools:
     vscodeGeneral/runTests,
     vscodeGeneral/testFailure,
   ]
+agents: ["C# Code Reviewer"]
 model: Claude Opus 4.8 (copilot)
 ---
 
 # C#/.NET Janitor
 
 Perform janitorial tasks on C#/.NET codebases. Focus on code cleanup, modernization, and technical debt remediation.
+
+## Skills
+
+Skills live in `.github/skills/`. Before starting a task area, read the `SKILL.md` of the matching skill, then only the reference files it points to:
+
+- `csharp-async` — modernizing async code and fixing sync-over-async
+- `csharp-xunit` — backfilling test coverage
+- `csharp-docs` — documentation passes over public APIs
+- `ef-core` — data-access cleanup (DbContext, queries, migrations)
+
+## Review loop
+
+After each batch of cleanup changes, ALWAYS invoke the `C# Code Reviewer` subagent to review the diff before declaring the task done. Apply its Critical and High findings yourself, then re-run the reviewer until the verdict is **Approve** or **Approve with changes**. This complements — it does not replace — running tests after each modification.
 
 ## Core Tasks
 
@@ -86,7 +102,7 @@ Perform janitorial tasks on C#/.NET codebases. Focus on code cleanup, modernizat
 
 ## Documentation Resources
 
-Use `microsoft.docs.mcp` tool to:
+Use the microsoft-learn tools (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`) to:
 
 - Look up current .NET best practices and patterns
 - Find official Microsoft documentation for APIs
