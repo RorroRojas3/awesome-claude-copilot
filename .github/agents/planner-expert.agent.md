@@ -32,6 +32,10 @@ handoffs:
     agent: "C#/.NET Janitor"
     prompt: "Execute the approved cleanup/modernization plan above (also saved at /memories/session/plan.md) incrementally, validating with build and tests after each change."
     send: true
+  - label: "Implement: Angular Expert"
+    agent: "Angular Expert"
+    prompt: "Implement the approved Angular plan above (also saved at /memories/session/plan.md) step by step. Load the skills named in the plan from .github/skills/ before coding, and report any deviations from the plan."
+    send: true
   - label: Start Implementation
     agent: agent
     prompt: "Start implementation"
@@ -112,9 +116,10 @@ Every plan targets exactly one implementation handoff. Pick it by the nature of 
 - **C# MCP Server Expert** — the plan builds or changes a Model Context Protocol server in C#: ModelContextProtocol / ModelContextProtocol.AspNetCore packages, `[McpServerTool]` / `[McpServerPrompt]` / `[McpServerResource]` attributes, stdio or HTTP transports, protocol debugging.
 - **C#/.NET Janitor** — the plan is cleanup, modernization, or tech-debt remediation on existing C# with behavior preserved: obsolete APIs, compiler warnings, formatting, nullable adoption, missing tests or docs, performance passes.
 - **C# Expert** — all other C#/.NET work: new features, ASP.NET Core APIs, Blazor, Azure Functions, EF Core, libraries, Microsoft Agent Framework solutions.
-- **Start Implementation** (generic) — anything outside those three: Angular/front-end work, mixed stacks, documentation-only changes.
+- **Angular Expert** — Angular/front-end work: components, signals, forms, routing, SSR, NgRx Signal Store state.
+- **Start Implementation** (generic) — anything outside those four: mixed stacks, documentation-only changes, everything else.
 
-End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The C# implementation agents run their own code review via the `C# Code Reviewer` subagent — the plan does not need a separate review step.
+End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The implementation agents run their own code review via their reviewer subagents — the plan does not need a separate review step.
 </routing>
 
 <plan_style_guide>

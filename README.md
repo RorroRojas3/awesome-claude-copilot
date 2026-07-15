@@ -4,7 +4,7 @@ A curated, reusable **[Claude Code](https://code.claude.com)** configuration for
 
 There is no application source code here. This repo is purely a portable set of assistant configuration — project memory, path-scoped rules, skills, subagents, and MCP servers — that encodes a team's standards once instead of re-explaining them in every prompt.
 
-> The repo ships two parallel trees: `.claude/` for Claude Code and `.github/` for GitHub Copilot — repository instructions (`copilot-instructions.md`), custom agents (`agents/*.agent.md`), and a `skills/` tree mirrored byte-for-byte from `.claude/skills/`.
+> The repo ships two parallel trees: `.claude/` for Claude Code and `.github/` for GitHub Copilot — repository instructions (`copilot-instructions.md`), path-scoped instructions (`instructions/*.instructions.md`), custom agents (`agents/*.agent.md`), and a `skills/` tree mirrored byte-for-byte from `.claude/skills/`. The `.github/` tree is self-contained: nothing in it references `.claude/`.
 
 ---
 

@@ -1,6 +1,6 @@
 # Repository instructions for GitHub Copilot
 
-Reusable standards for **C#/.NET back ends and Angular front ends**. This repository contains no application code — it ships configuration: `.claude/` for Claude Code and `.github/` for GitHub Copilot (custom agents in `agents/`, plus a `skills/` tree mirrored from `.claude/skills/`). Follow these instructions for all C# and Angular work.
+Reusable standards for **C#/.NET back ends and Angular front ends**. This repository contains no application code — it ships GitHub Copilot configuration under `.github/`: these repository instructions, path-scoped instructions (`instructions/`), custom agents (`agents/`), and agent skills (`skills/`). Follow these instructions for all C# and Angular work.
 
 ## C# coding standards (always)
 
@@ -34,17 +34,18 @@ Before working in an area, read that skill's `SKILL.md`, then only the reference
 | `angular-developer` | general Angular (components, signals, forms, DI, routing, SSR, testing) |
 | `ngrx-signal-store` | NgRx Signal Store state management (source of truth for state) |
 
-## Detailed rules — `.claude/rules/`
+## Path-scoped instructions — `.github/instructions/`
 
-These are **not auto-loaded for Copilot** — always read the matching rules file before editing matching files:
+These apply automatically (via `applyTo` globs) when working on matching files; when reviewing or planning, read the matching file explicitly:
 
-| Rule file | Applies to |
+| Instructions file | Applies to |
 | --- | --- |
-| `.claude/rules/csharp.md` | all `*.cs` |
-| `.claude/rules/aspnet-rest-apis.md` | REST / ASP.NET Core APIs |
-| `.claude/rules/azure-functions-csharp.md` | Azure Functions (isolated worker), `host.json`, `local.settings.json` |
-| `.claude/rules/blazor.md` | `*.razor`, `*.razor.cs`, `*.razor.css` |
-| `.claude/rules/csharp-mcp-server.md` | MCP servers in C# |
+| `csharp.instructions.md` | all `*.cs` |
+| `aspnet-rest-apis.instructions.md` | REST / ASP.NET Core APIs (`*.cs`, `*.json`) |
+| `azure-functions-csharp.instructions.md` | Azure Functions (isolated worker), `host.json`, `local.settings.json` |
+| `blazor.instructions.md` | `*.razor`, `*.razor.cs`, `*.razor.css` |
+| `csharp-mcp-server.instructions.md` | MCP servers in C# (`*.cs`, `*.csproj`) |
+| `terraform.instructions.md` | `*.tf` |
 
 ## Custom agents — `.github/agents/`
 
@@ -54,6 +55,7 @@ Intended flow: plan with **Planner Expert** → hand off to the recommended impl
 - **C# Expert** — general C#/.NET implementation.
 - **C# MCP Server Expert** — Model Context Protocol servers in C#.
 - **C#/.NET Janitor** — cleanup, modernization, tech-debt remediation.
+- **Angular Expert** — Angular implementation (components, signals, forms, routing, SSR, Signal Store).
 - **C# Code Reviewer** / **Angular Code Reviewer** — read-only reviewers reporting findings by severity with a verdict; invoked as subagents by the implementation agents after code changes, or run standalone from the agents dropdown.
 
 When the microsoft-learn or angular-cli MCP servers are available, use them to ground version-specific .NET/Azure and Angular answers instead of relying on memory.

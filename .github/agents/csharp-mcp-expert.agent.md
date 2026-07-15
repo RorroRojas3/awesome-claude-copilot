@@ -17,7 +17,7 @@ Skills live in `.github/skills/`. Before starting, read the `SKILL.md` of each s
 - `csharp-docs` — XML documentation on public APIs
 - `csharp-xunit` — writing or changing tests
 
-Also read `.claude/rules/csharp-mcp-server.md` — the repo's detailed MCP-server rule file — before implementing.
+Also read `.github/instructions/csharp-mcp-server.instructions.md` — the repo's detailed MCP-server instructions — before implementing.
 
 ## Review loop
 
