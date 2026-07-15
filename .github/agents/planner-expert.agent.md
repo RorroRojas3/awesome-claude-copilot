@@ -36,6 +36,10 @@ handoffs:
     agent: "Angular Expert"
     prompt: "Implement the approved Angular plan above (also saved at /memories/session/plan.md) step by step. Load the skills named in the plan from .github/skills/ before coding, and report any deviations from the plan."
     send: true
+  - label: "Implement: Full-Stack Expert"
+    agent: "Full-Stack Expert"
+    prompt: "Orchestrate the approved full-stack plan above (also saved at /memories/session/plan.md): write the API contract first, then delegate the back-end and front-end packages to your expert subagents in parallel, verify the integrated seam, and confirm both sides end with a passing review verdict."
+    send: true
   - label: Start Implementation
     agent: agent
     prompt: "Start implementation"
@@ -117,7 +121,8 @@ Every plan targets exactly one implementation handoff. Pick it by the nature of 
 - **C#/.NET Janitor** — the plan is cleanup, modernization, or tech-debt remediation on existing C# with behavior preserved: obsolete APIs, compiler warnings, formatting, nullable adoption, missing tests or docs, performance passes.
 - **C# Expert** — all other C#/.NET work: new features, ASP.NET Core APIs, Blazor, Azure Functions, EF Core, libraries, Microsoft Agent Framework solutions.
 - **Angular Expert** — Angular/front-end work: components, signals, forms, routing, SSR, NgRx Signal Store state.
-- **Start Implementation** (generic) — anything outside those four: mixed stacks, documentation-only changes, everything else.
+- **Full-Stack Expert** — the plan spans both stacks (a C#/.NET API plus the Angular UI that consumes it): it fixes the API contract first, then delegates to C# Expert and Angular Expert in parallel and verifies the integrated seam.
+- **Start Implementation** (generic) — anything outside those five: documentation-only changes, everything else.
 
 End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The implementation agents run their own code review via their reviewer subagents — the plan does not need a separate review step.
 </routing>
