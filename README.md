@@ -30,8 +30,9 @@ There is no application source code here. This repo is purely a portable set of 
 │   │       ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
 │   │       └── references/                 # read on demand, not loaded up front
 │   ├── agents/                   # Subagents
-│   │   ├── csharp-code-reviewer.md         # Opus, read-only C#/.NET review
-│   │   └── se-technical-writer.agent.md    # Sonnet, writes docs under docs/
+│   │   ├── csharp-code-reviewer.md         # Sonnet, read-only C#/.NET review
+│   │   ├── angular-code-reviewer.md        # Sonnet, read-only Angular review
+│   │   └── se-technical-writer.md          # Haiku, writes docs under docs/
 │   ├── commands/                 # Slash commands
 │   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
 │   └── settings.json             # Model + MCP defaults

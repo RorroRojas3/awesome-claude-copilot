@@ -58,6 +58,7 @@ Intended flow: plan with **Planner Expert** → hand off to the recommended impl
 - **Angular Expert** — Angular implementation (components, signals, forms, routing, SSR, Signal Store).
 - **Full-Stack Expert** — orchestrates features spanning both stacks: fixes the API contract, delegates to C# Expert and Angular Expert in parallel, verifies the integrated seam, and ensures both sides end with a passing review verdict.
 - **C# Code Reviewer** / **Angular Code Reviewer** — read-only reviewers reporting findings by severity with a verdict; invoked as subagents by the implementation agents after code changes, or run standalone from the agents dropdown.
+- **SE Technical Writer** — creates or updates developer documentation as Markdown under `docs/` (guides, tutorials, ADRs, reference docs) after a feature is implemented or when implementation details need documenting.
 
 When the microsoft-learn or angular-cli MCP servers are available, use them to ground version-specific .NET/Azure and Angular answers instead of relying on memory.
 
