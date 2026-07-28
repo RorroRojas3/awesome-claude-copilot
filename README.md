@@ -4,7 +4,7 @@ A curated, reusable **[Claude Code](https://code.claude.com)** configuration for
 
 There is no application source code here. This repo is purely a portable set of assistant configuration — project memory, path-scoped rules, skills, subagents, and MCP servers — that encodes a team's standards once instead of re-explaining them in every prompt.
 
-> The repo ships two parallel trees: `.claude/` for Claude Code and `.github/` for GitHub Copilot — repository instructions (`copilot-instructions.md`), path-scoped instructions (`instructions/*.instructions.md`), custom agents (`agents/*.agent.md`), and a `skills/` tree mirrored byte-for-byte from `.claude/skills/`. The `.github/` tree is self-contained: nothing in it references `.claude/`.
+> The repo ships two parallel trees: `.claude/` for Claude Code and `.github/` for GitHub Copilot — repository instructions (`copilot-instructions.md`), path-scoped instructions (`instructions/*.instructions.md`), custom agents (`agents/*.agent.md`), reusable prompts (`prompts/*.prompt.md`), and a `skills/` tree mirrored byte-for-byte from `.claude/skills/`. The `.github/` tree is self-contained: nothing in it references `.claude/`. `.vscode/mcp.json` gives Copilot in VS Code the same MCP servers that `.mcp.json` gives Claude Code.
 
 ---
 
@@ -19,11 +19,19 @@ There is no application source code here. This repo is purely a portable set of 
 │   │   ├── aspnet-rest-apis.md             → **/*.cs, **/*.json
 │   │   ├── azure-functions-csharp.md       → **/*.cs, **/host.json, **/local.settings.json, **/*.csproj
 │   │   ├── blazor.md                       → **/*.razor, **/*.razor.cs, **/*.razor.css
-│   │   └── csharp-mcp-server.md            → **/*.cs, **/*.csproj
+│   │   ├── csharp-mcp-server.md            → **/*.cs, **/*.csproj
+│   │   └── terraform.md                    → **/*.tf
 │   ├── skills/                   # Invokable skills (Skill tool)
+│   │   ├── angular-developer/              # official Angular team skill (pinned via skills-lock.json)
 │   │   ├── csharp-async/SKILL.md
 │   │   ├── csharp-docs/SKILL.md
 │   │   ├── csharp-xunit/SKILL.md
+│   │   ├── ef-core/SKILL.md
+│   │   ├── github-actions-efficiency/      # CI-minutes and cost audits
+│   │   ├── github-actions-hardening/       # workflow security review
+│   │   ├── github-actions-runtime-upgrade-conventions/SKILL.md
+│   │   ├── microsoft-agent-framework/      # + references/dotnet.md
+│   │   ├── microsoft-docs/SKILL.md         # Learn MCP first; Context7 for the rest
 │   │   └── ngrx-signal-store/    # Progressive-disclosure skill (see below)
 │   │       ├── SKILL.md
 │   │       ├── sources.json                # pinned upstream doc shas + @ngrx/signals version
@@ -32,12 +40,15 @@ There is no application source code here. This repo is purely a portable set of 
 │   ├── agents/                   # Subagents
 │   │   ├── csharp-code-reviewer.md         # Sonnet, read-only C#/.NET review
 │   │   ├── angular-code-reviewer.md        # Sonnet, read-only Angular review
+│   │   ├── github-actions-reviewer.md      # Opus, read-only workflow review
 │   │   └── se-technical-writer.md          # Haiku, writes docs under docs/
 │   ├── commands/                 # Slash commands
 │   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
-│   └── settings.json             # Model + MCP defaults
+│   ├── settings.json             # Model + MCP defaults
+│   └── skills-lock.json          # pin for the installed angular-developer skill
 │
-└── .mcp.json                     # MCP servers
+├── .vscode/mcp.json              # same MCP servers, for GitHub Copilot in VS Code
+└── .mcp.json                     # MCP servers (Claude Code)
 ```
 
 ---
@@ -55,10 +66,13 @@ Framework specifics live in `.claude/rules/`, which auto-load when you edit a ma
 | Azure Functions (isolated worker) | `azure-functions-csharp.md` |
 | Blazor | `blazor.md` |
 | MCP servers in C# | `csharp-mcp-server.md` |
+| Terraform | `terraform.md` |
 
-**Angular**: NgRx Signal Store state management — see below.
+**Angular**: general implementation guidance via the official `angular-developer` skill; NgRx Signal Store state management — see below.
 
-**Skills**: `csharp-async`, `csharp-docs`, `csharp-xunit`, `ngrx-signal-store`.
+**GitHub Actions**: workflow security hardening, CI-efficiency audits, and runtime/version upgrades — three skills preloaded by the read-only `github-actions-reviewer` subagent (Opus), each also invokable on its own.
+
+**Skills**: `angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`.
 
 ---
 
@@ -120,6 +134,9 @@ Configured in `.mcp.json`; `.claude/settings.json` sets `enableAllProjectMcpServ
 | `microsoft-learn` | HTTP (`https://learn.microsoft.com/api/mcp`) | Ground .NET/Azure answers in official Microsoft Learn docs |
 | `angular-cli` | stdio (`npx @angular/cli mcp`) | Ground Angular answers in the installed Angular version |
 | `terraform` | stdio (Docker: `hashicorp/terraform-mcp-server`) | Infrastructure-as-code |
+| `context7` | stdio (`npx @upstash/context7-mcp`) | Docs outside learn.microsoft.com (VS Code, GitHub, Aspire) — used by the `microsoft-docs` skill |
+
+The same four servers are configured for GitHub Copilot in [`.vscode/mcp.json`](.vscode/mcp.json).
 
 ---
 
@@ -127,7 +144,7 @@ Configured in `.mcp.json`; `.claude/settings.json` sets `enableAllProjectMcpServ
 
 1. Copy [`.claude/`](.claude/) and [`.mcp.json`](.mcp.json) into the root of your repository.
 2. Start Claude Code there. It loads `.claude/CLAUDE.md` every session, and the matching `.claude/rules/*.md` whenever you edit a relevant file.
-3. The skills, the `csharp-code-reviewer` and `se-technical-writer` subagents, and the `/ngrx-signals-sync` command become available. Delegation is described in `CLAUDE.md`: after changing C#, `csharp-code-reviewer` reviews it (read-only); new features or implementation notes go to `se-technical-writer`, which writes Markdown under `docs/`.
+3. The skills, the `csharp-code-reviewer`, `angular-code-reviewer`, `github-actions-reviewer`, and `se-technical-writer` subagents, and the `/ngrx-signals-sync` command become available. Delegation is described in `CLAUDE.md`: after changing C#, `csharp-code-reviewer` reviews it (read-only); after changing Angular, `angular-code-reviewer`; after changing GitHub Actions workflows, `github-actions-reviewer`; new features or implementation notes go to `se-technical-writer`, which writes Markdown under `docs/`.
 
 Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has no dependencies).
 

@@ -31,6 +31,10 @@ Before working in an area, read that skill's `SKILL.md`, then only the reference
 | `csharp-xunit` | xUnit unit testing |
 | `ef-core` | Entity Framework Core (DbContext, queries, migrations) |
 | `microsoft-agent-framework` | Microsoft Agent Framework solutions |
+| `microsoft-docs` | querying official Microsoft documentation (Learn MCP first; Context7 for docs outside learn.microsoft.com) |
+| `github-actions-hardening` | security review of workflows (script injection, privileged triggers, SHA pinning, least-privilege tokens) |
+| `github-actions-efficiency` | workflow efficiency audits (caching, concurrency, trigger scoping, CI cost) |
+| `github-actions-runtime-upgrade-conventions` | upgrading actions to supported runtimes and safe versions |
 | `angular-developer` | general Angular (components, signals, forms, DI, routing, SSR, testing) |
 | `ngrx-signal-store` | NgRx Signal Store state management (source of truth for state) |
 
@@ -58,9 +62,10 @@ Intended flow: plan with **Planner Expert** → hand off to the recommended impl
 - **Angular Expert** — Angular implementation (components, signals, forms, routing, SSR, Signal Store).
 - **Full-Stack Expert** — orchestrates features spanning both stacks: fixes the API contract, delegates to C# Expert and Angular Expert in parallel, verifies the integrated seam, and ensures both sides end with a passing review verdict.
 - **C# Code Reviewer** / **Angular Code Reviewer** — read-only reviewers reporting findings by severity with a verdict; invoked as subagents by the implementation agents after code changes, or run standalone from the agents dropdown.
+- **GitHub Actions Reviewer** — read-only reviewer for workflow files (`.github/workflows/*.yml`) and composite actions; covers security hardening, CI efficiency, and runtime/version currency using the three `github-actions-*` skills. Use it after writing or modifying any workflow.
 - **SE Technical Writer** — creates or updates developer documentation as Markdown under `docs/` (guides, tutorials, ADRs, reference docs) after a feature is implemented or when implementation details need documenting.
 
-When the microsoft-learn or angular-cli MCP servers are available, use them to ground version-specific .NET/Azure and Angular answers instead of relying on memory.
+When the microsoft-learn or angular-cli MCP servers are available, use them to ground version-specific .NET/Azure and Angular answers instead of relying on memory. When the context7 MCP server is available, use it for docs that live outside learn.microsoft.com (VS Code, GitHub, Aspire) — see the `microsoft-docs` skill. Repo-level MCP configuration for VS Code lives in `.vscode/mcp.json`.
 
 ## Commands
 
