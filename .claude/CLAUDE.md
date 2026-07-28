@@ -6,10 +6,10 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 
 - `CLAUDE.md` — this file (always-on standards + delegation rules).
 - `rules/` — detailed standards that **auto-apply by file type** (see [Detailed standards](#detailed-standards--clauderules)).
-- `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ngrx-signal-store`).
-- `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `se-technical-writer`).
+- `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`).
+- `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `github-actions-reviewer`, `se-technical-writer`).
 - `commands/` — slash commands (`/ngrx-signals-sync`).
-- `settings.json` and `.mcp.json` (repo root) — model and MCP server configuration.
+- `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, skill-pinning, and MCP server configuration.
 
 ## C# coding standards (always)
 
@@ -84,6 +84,12 @@ Available via the Skill tool:
 - `csharp-async` — async/await best practices.
 - `csharp-docs` — XML documentation conventions.
 - `csharp-xunit` — xUnit unit-testing patterns.
+- `ef-core` — Entity Framework Core best practices (DbContext, queries, migrations).
+- `microsoft-agent-framework` — Microsoft Agent Framework solutions; shared guidance plus a `references/dotnet.md` deep-dive. Ground advice in live docs — the framework is in public preview and changes quickly.
+- `microsoft-docs` — querying official Microsoft documentation: Microsoft Learn MCP by default, with Context7 (and the Aspire MCP, when its CLI is present) for content outside learn.microsoft.com (VS Code, GitHub, Aspire).
+- `github-actions-hardening` — security review of GitHub Actions workflows (script injection, privileged triggers, SHA pinning, least-privilege tokens).
+- `github-actions-efficiency` — audit workflow efficiency to cut CI minutes and cost (caching, concurrency, trigger scoping).
+- `github-actions-runtime-upgrade-conventions` — upgrade actions to supported runtimes and safe versions. These three are the lane skills preloaded by the `github-actions-reviewer` subagent, but each is also invokable on its own.
 - `angular-developer` — the official Angular team agent skill (from <https://angular.dev/ai/agent-skills>, installed from `github.com/angular/skills`). General Angular implementation guidance with progressive disclosure: `SKILL.md` routes to `references/` files for components, signals (`linkedSignal`, `resource`, effects), forms (incl. Signal Forms), DI, routing/SSR, styling, and testing. For state management, `ngrx-signal-store` remains the source of truth.
 - `ngrx-signal-store` — NgRx Signal Store patterns for Angular. Uses progressive disclosure: `SKILL.md` carries the decision rules, and `references/` files (entities, async/RxJS, custom features, testing, events, recipes, API) are read only when needed. Pinned to a specific `@ngrx/signals` version and refreshed with `/ngrx-signals-sync`.
 
@@ -98,6 +104,7 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 | Azure Functions (isolated worker) | `.claude/rules/azure-functions-csharp.md` | `**/*.cs`, `**/host.json`, `**/local.settings.json`, `**/*.csproj` |
 | Blazor components                 | `.claude/rules/blazor.md`                 | `**/*.razor`, `**/*.razor.cs`, `**/*.razor.css`                    |
 | MCP servers in C#                 | `.claude/rules/csharp-mcp-server.md`      | `**/*.cs`, `**/*.csproj`                                           |
+| Terraform                         | `.claude/rules/terraform.md`              | `**/*.tf`                                                          |
 
 ## MCP servers — see `@.mcp.json`
 
@@ -106,11 +113,13 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 - **`microsoft-learn`** — Ground .NET/Azure answers in official Microsoft Learn docs. Before answering a version-specific .NET or Azure question, query it (`microsoft_docs_search` → `microsoft_code_sample_search` → `microsoft_docs_fetch`) instead of relying on memory.
 - **`angular-cli`** — Ground Angular answers in the installed Angular version rather than memory (`list_projects` → `get_best_practices` → `search_documentation` → `find_examples`). Use it for components, zoneless, routing, and CLI work; for state management, the `ngrx-signal-store` skill is the source of truth.
 - **`terraform`** — infrastructure-as-code.
+- **`context7`** — docs lookup for content that lives outside learn.microsoft.com (VS Code, GitHub, Aspire); used by the `microsoft-docs` skill. Resolve the library ID first, then query.
 
 ## Delegation rules
 
-- **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Opus, with the C# skills preloaded). It reports findings; it does not edit files.
-- **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Opus, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
+- **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Sonnet, with the C# and `ef-core` skills preloaded). It reports findings; it does not edit files.
+- **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Sonnet, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
+- **After writing or modifying GitHub Actions workflows** (`.github/workflows/*.yml` or composite actions), delegate a review to the `github-actions-reviewer` subagent (runs on Opus, with the three `github-actions-*` skills preloaded). It reports findings; it does not edit files.
 - **When a new feature is implemented, or implementation details need documenting**, delegate to the `se-technical-writer` subagent to author or update Markdown docs under `docs/` (create the folder if it does not exist).
 
 ## Common commands
