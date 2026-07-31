@@ -10,6 +10,7 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 - `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `github-actions-reviewer`, `se-technical-writer`).
 - `commands/` — slash commands (`/ngrx-signals-sync`).
 - `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, skill-pinning, and MCP server configuration.
+- `CHANGELOG.md` (repo root) — running record of features and notable changes, maintained by the `se-technical-writer` subagent (see [Changelog & feature tracking](#changelog--feature-tracking)).
 
 ## C# coding standards (always)
 
@@ -120,7 +121,15 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 - **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Sonnet, with the C# and `ef-core` skills preloaded). It reports findings; it does not edit files.
 - **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Sonnet, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
 - **After writing or modifying GitHub Actions workflows** (`.github/workflows/*.yml` or composite actions), delegate a review to the `github-actions-reviewer` subagent (runs on Opus, with the three `github-actions-*` skills preloaded). It reports findings; it does not edit files.
-- **When a new feature is implemented, or implementation details need documenting**, delegate to the `se-technical-writer` subagent to author or update Markdown docs under `docs/` (create the folder if it does not exist).
+- **After a feature is implemented and the relevant reviewer verdict passes**, ALWAYS delegate to the `se-technical-writer` subagent to author or update Markdown docs under `docs/` (create the folder if it does not exist) **and** add the entry to the root `CHANGELOG.md` under `[Unreleased]`. Also delegate to it whenever implementation details need documenting on their own.
+
+## Changelog & feature tracking
+
+The root `CHANGELOG.md` follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format and is the running record of features and notable changes:
+
+- Every PR adds or updates **one entry** under `## [Unreleased]`, in the matching subsection (`### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Deprecated`, `### Security`). Concise, reader-facing phrasing — not a commit list.
+- The `se-technical-writer` subagent owns the changelog and writes the entry as part of its post-implementation delegation. Routine cleanups with no behavior change still get a one-line entry, even when they need no docs.
+- On release, the `[Unreleased]` section is renamed to the version and date, and a fresh `[Unreleased]` section is started.
 
 ## Common commands
 

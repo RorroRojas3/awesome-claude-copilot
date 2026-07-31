@@ -4,6 +4,11 @@ description: "Read-only GitHub Actions workflow review specialist. Use immediate
 argument-hint: "Paste a diff, workflow file paths, or a snippet to review"
 model: Claude Sonnet 5 (copilot)
 tools: [read, search, web, execute/runInTerminal, execute/getTerminalOutput]
+handoffs:
+  - label: "Apply fixes"
+    agent: agent
+    prompt: "Apply the fixes for the review findings above, starting with Critical and High severity. Re-run the workflow validation (actionlint if available) afterwards."
+    send: false
 ---
 
 # GitHub Actions Reviewer
