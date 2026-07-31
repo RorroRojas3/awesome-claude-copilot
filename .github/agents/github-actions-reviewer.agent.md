@@ -2,15 +2,13 @@
 name: "GitHub Actions Reviewer"
 description: "Read-only GitHub Actions workflow review specialist. Use immediately after writing or modifying workflow files (.github/workflows/*.yml) or composite actions. Reviews security hardening (script injection, privileged triggers, action pinning, least-privilege tokens), CI efficiency (caching, concurrency, trigger scoping), and runtime/action-version currency against the repo's skills. Reports findings by severity with an explicit verdict; never edits files."
 argument-hint: "Paste a diff, workflow file paths, or a snippet to review"
-model: Claude Opus 4.8 (copilot)
-tools:
-  [
-    read,
-    search,
-    web,
-    execute/runInTerminal,
-    execute/getTerminalOutput,
-  ]
+model: Claude Sonnet 5 (copilot)
+tools: [read, search, web, execute/runInTerminal, execute/getTerminalOutput]
+handoffs:
+  - label: "Apply fixes"
+    agent: agent
+    prompt: "Apply the fixes for the review findings above, starting with Critical and High severity. Re-run the workflow validation (actionlint if available) afterwards."
+    send: false
 ---
 
 # GitHub Actions Reviewer

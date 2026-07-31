@@ -53,19 +53,27 @@ These apply automatically (via `applyTo` globs) when working on matching files; 
 
 ## Custom agents — `.github/agents/`
 
-Intended flow: plan with **Planner Expert** → hand off to the recommended implementation agent → that agent invokes the matching code-reviewer subagent before finishing.
+Intended flow: plan with **Planner Expert** → hand off to the recommended implementation agent → that agent invokes the matching code-reviewer subagent → once the verdict passes, it invokes the **SE Technical Writer** subagent to document the feature under `docs/` and add the `CHANGELOG.md` entry before finishing. Any agent that modified GitHub Actions workflows also invokes the **GitHub Actions Reviewer** on those files.
 
 - **Planner Expert** — researches and outlines a plan, then routes via handoff buttons (VS Code).
 - **C# Expert** — general C#/.NET implementation.
 - **C# MCP Server Expert** — Model Context Protocol servers in C#.
 - **C#/.NET Janitor** — cleanup, modernization, tech-debt remediation.
 - **Angular Expert** — Angular implementation (components, signals, forms, routing, SSR, Signal Store).
-- **Full-Stack Expert** — orchestrates features spanning both stacks: fixes the API contract, delegates to C# Expert and Angular Expert in parallel, verifies the integrated seam, and ensures both sides end with a passing review verdict.
+- **Full-Stack Expert** — orchestrates features spanning both stacks: fixes the API contract, delegates to C# Expert and Angular Expert in parallel, verifies the integrated seam, ensures both sides end with a passing review verdict, and invokes the SE Technical Writer once for the whole feature (sub-experts skip their own documentation step).
 - **C# Code Reviewer** / **Angular Code Reviewer** — read-only reviewers reporting findings by severity with a verdict; invoked as subagents by the implementation agents after code changes, or run standalone from the agents dropdown.
 - **GitHub Actions Reviewer** — read-only reviewer for workflow files (`.github/workflows/*.yml`) and composite actions; covers security hardening, CI efficiency, and runtime/version currency using the three `github-actions-*` skills. Use it after writing or modifying any workflow.
-- **SE Technical Writer** — creates or updates developer documentation as Markdown under `docs/` (guides, tutorials, ADRs, reference docs) after a feature is implemented or when implementation details need documenting.
+- **SE Technical Writer** — creates or updates developer documentation as Markdown under `docs/` (guides, tutorials, ADRs, reference docs) after a feature is implemented or when implementation details need documenting. Also owns the root `CHANGELOG.md` and records each feature or notable change under `[Unreleased]`.
 
 When the microsoft-learn or angular-cli MCP servers are available, use them to ground version-specific .NET/Azure and Angular answers instead of relying on memory. When the context7 MCP server is available, use it for docs that live outside learn.microsoft.com (VS Code, GitHub, Aspire) — see the `microsoft-docs` skill. Repo-level MCP configuration for VS Code lives in `.vscode/mcp.json`.
+
+## Changelog & feature tracking
+
+The root `CHANGELOG.md` follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format and is the running record of features and notable changes:
+
+- Every PR adds or updates **one entry** under `## [Unreleased]`, in the matching subsection (`### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Deprecated`, `### Security`). Concise, reader-facing phrasing — not a commit list.
+- The **SE Technical Writer** owns the changelog and writes the entry as part of its post-implementation invocation. Exception: the C#/.NET Janitor appends its own one-line entry for routine cleanups with no behavior change.
+- On release, the `[Unreleased]` section is renamed to the version and date, and a fresh `[Unreleased]` section is started.
 
 ## Commands
 

@@ -2,7 +2,7 @@
 name: "C# Code Reviewer"
 description: "Read-only C#/.NET code review specialist. Use immediately after writing or modifying C# code. Reviews correctness, async/concurrency pitfalls, nullable usage, naming, error handling, security and secret leakage, XML-doc coverage, and test quality against the repo's rules and skills. Reports findings by severity with an explicit verdict; never edits files."
 argument-hint: "Paste a diff, PR, file paths, or a snippet to review"
-model: Claude Sonnet 4.5 (copilot)
+model: Claude Sonnet 5 (copilot)
 tools:
   [
     read,

@@ -19,6 +19,7 @@ tools:
     vscodeGeneral/testFailure,
   ]
 agents: ["Explore"]
+model: Claude Sonnet 5 (copilot)
 handoffs:
   - label: "Implement: C# Expert"
     agent: "C# Expert"
@@ -39,6 +40,10 @@ handoffs:
   - label: "Implement: Full-Stack Expert"
     agent: "Full-Stack Expert"
     prompt: "Orchestrate the approved full-stack plan above (also saved at /memories/session/plan.md): write the API contract first, then delegate the back-end and front-end packages to your expert subagents in parallel, verify the integrated seam, and confirm both sides end with a passing review verdict."
+    send: true
+  - label: "Document: SE Technical Writer"
+    agent: "SE Technical Writer"
+    prompt: "Execute the approved documentation plan above (also saved at /memories/session/plan.md): create or update the Markdown docs under docs/ and add the corresponding CHANGELOG.md entry under [Unreleased]."
     send: true
   - label: Start Implementation
     agent: agent
@@ -122,9 +127,10 @@ Every plan targets exactly one implementation handoff. Pick it by the nature of 
 - **C# Expert** — all other C#/.NET work: new features, ASP.NET Core APIs, Blazor, Azure Functions, EF Core, libraries, Microsoft Agent Framework solutions.
 - **Angular Expert** — Angular/front-end work: components, signals, forms, routing, SSR, NgRx Signal Store state.
 - **Full-Stack Expert** — the plan spans both stacks (a C#/.NET API plus the Angular UI that consumes it): it fixes the API contract first, then delegates to C# Expert and Angular Expert in parallel and verifies the integrated seam.
-- **Start Implementation** (generic) — anything outside those five: documentation-only changes, everything else.
+- **SE Technical Writer** — documentation-only work: guides, tutorials, ADRs, or reference docs under `docs/`, and changelog updates.
+- **Start Implementation** (generic) — anything outside those six.
 
-End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The implementation agents run their own code review via their reviewer subagents — the plan does not need a separate review step.
+End every presented plan with a **Recommended agent** line naming exactly one of the handoffs above, so the user knows which button to press. The implementation agents run their own code review via their reviewer subagents and finish by invoking the SE Technical Writer for docs and the `CHANGELOG.md` entry — the plan does not need separate review or documentation steps.
 </routing>
 
 <plan_style_guide>
