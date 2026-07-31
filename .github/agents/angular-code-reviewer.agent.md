@@ -2,7 +2,7 @@
 name: "Angular Code Reviewer"
 description: "Read-only Angular code review specialist. Use immediately after writing or modifying Angular code — components, templates, services, routing, forms, HTTP, or NgRx Signal Store state. Reviews signals correctness, change detection and zoneless readiness, template control flow, DI, forms, SSR/hydration safety, security, accessibility, performance, and test quality. Reports findings by severity with an explicit verdict; never edits files."
 argument-hint: "Paste a diff, PR, file paths, or a snippet to review"
-model: Claude Sonnet 4.5 (copilot)
+model: Claude Sonnet 5 (copilot)
 tools:
   [
     read,

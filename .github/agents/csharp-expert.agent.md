@@ -1,8 +1,8 @@
 ---
 name: "C# Expert"
 description: An agent designed to assist with software development tasks for .NET projects.
-model: Claude Opus 4.8 (copilot)
-agents: ["C# Code Reviewer"]
+model: Claude Sonnet 5 (copilot)
+agents: ["C# Code Reviewer", "SE Technical Writer"]
 # version: 2026-01-20a
 ---
 

@@ -1,8 +1,8 @@
 ---
 description: "Expert assistant for developing Model Context Protocol (MCP) servers in C#"
 name: "C# MCP Server Expert"
-model: Claude Opus 4.8 (copilot)
-agents: ["C# Code Reviewer"]
+model: Claude Sonnet 5 (copilot)
+agents: ["C# Code Reviewer", "SE Technical Writer"]
 ---
 
 # C# MCP Server Expert

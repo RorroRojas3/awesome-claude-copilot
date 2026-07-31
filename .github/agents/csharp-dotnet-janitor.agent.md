@@ -1,6 +1,7 @@
 ---
 description: "Perform janitorial tasks on C#/.NET code including cleanup, modernization, and tech debt remediation."
 name: "C#/.NET Janitor"
+model: Claude Sonnet 5 (copilot)
 tools:
   [
     agent,
@@ -39,7 +40,6 @@ tools:
     vscodeGeneral/testFailure,
   ]
 agents: ["C# Code Reviewer"]
-model: Claude Opus 4.8 (copilot)
 ---
 
 # C#/.NET Janitor

@@ -1,8 +1,8 @@
 ---
 name: "Angular Expert"
 description: An implementation agent for Angular front ends — components, signals, forms, routing, SSR, and NgRx Signal Store state. Enforces the repo's Angular standards and always self-reviews changes through the Angular Code Reviewer subagent.
-model: Claude Opus 4.8 (copilot)
-agents: ["Angular Code Reviewer"]
+model: Claude Sonnet 5 (copilot)
+agents: ["Angular Code Reviewer", "SE Technical Writer"]
 # version: 2026-07-14a
 ---
 

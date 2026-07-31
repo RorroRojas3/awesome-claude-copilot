@@ -19,6 +19,7 @@ tools:
     vscodeGeneral/testFailure,
   ]
 agents: ["Explore"]
+model: Claude Sonnet 5 (copilot)
 handoffs:
   - label: "Implement: C# Expert"
     agent: "C# Expert"

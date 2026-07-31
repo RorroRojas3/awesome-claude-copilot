@@ -2,7 +2,7 @@
 name: "SE Technical Writer"
 description: "Technical writing specialist. Use to create or update developer documentation under docs/ when new features are implemented or implementation details need documenting. Produces guides, tutorials, ADRs, and reference docs."
 argument-hint: "Describe the feature or implementation details to document"
-model: Gemini 3.5 Flash (copilot)
+model: Claude Haiku 4.5 (copilot)
 tools:
   [
     read,
