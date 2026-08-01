@@ -5,7 +5,9 @@ Reusable standards for **C#/.NET back ends and Angular front ends**. This reposi
 ## C# coding standards (always)
 
 - Target the latest C# version (currently **C# 14**). File-scoped namespaces; single-line `using` directives; honor `.editorconfig`. Prefer pattern matching and switch expressions; use `nameof(...)` instead of string literals for member names. Newline before every opening `{`; a method's final `return` on its own line.
-- PascalCase for types, methods, and public members; camelCase for private fields and locals; prefix interfaces with `I` (e.g. `IUserService`).
+- Prefer **primary constructors**; capture each injected dependency into a `private readonly` `_camelCase` field (`private readonly IUserRepository _repository = repository;`) and use the field in method bodies.
+- Prefer **collection expressions** (`[]`, `[1, 2, 3]`, `[.. items]`) over `new List<T>()`, `new T[] { }`, or `Array.Empty<T>()`.
+- PascalCase for types, methods, and public members; `_camelCase` for private fields (e.g. `_userService`); camelCase for locals and parameters; prefix interfaces with `I` (e.g. `IUserService`).
 - Declare variables non-nullable and validate `null` at entry points only. Use `is null` / `is not null` — never `== null` / `!= null`. Trust null annotations; no redundant checks.
 - Async: suffix async methods with `Async`; return `Task`, `Task<T>`, or `ValueTask<T>`. Never block with `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. No `async void` except event handlers; always `await` Task-returning calls. `ConfigureAwait(false)` in library code; flow a `CancellationToken` through long-running operations; parallelize with `Task.WhenAll` / `Task.WhenAny`.
 - Validation & errors: `try`/`catch` around `await`s; never silently swallow exceptions. Validate with FluentValidation or DataAnnotations; centralize with global exception middleware; return errors as Problem Details (RFC 9457).
@@ -47,7 +49,7 @@ These apply automatically (via `applyTo` globs) when working on matching files; 
 | `csharp.instructions.md` | all `*.cs` |
 | `aspnet-rest-apis.instructions.md` | REST / ASP.NET Core APIs (`*.cs`, `*.json`) |
 | `azure-functions-csharp.instructions.md` | Azure Functions (isolated worker), `host.json`, `local.settings.json` |
-| `blazor.instructions.md` | `*.razor`, `*.razor.cs`, `*.razor.css` |
+| `blazor-wasm.instructions.md` | standalone Blazor WebAssembly (`*.razor`, `*.razor.cs`, `*.razor.css`) |
 | `csharp-mcp-server.instructions.md` | MCP servers in C# (`*.cs`, `*.csproj`) |
 | `terraform.instructions.md` | `*.tf` |
 

@@ -18,8 +18,28 @@ paths:
 ## Naming Conventions
 
 - Follow PascalCase for component names, method names, and public members.
-- Use camelCase for private fields and local variables.
+- Prefix private fields with an underscore and use `_camelCase` (e.g., `_userService`, `_cache`).
+- Use camelCase for local variables and parameters.
 - Prefix interface names with "I" (e.g., IUserService).
+
+## Modern C# Constructs
+
+- Prefer primary constructors for classes (services, controllers, handlers). Capture every injected dependency into a `private readonly` `_camelCase` field at the top of the class, and reference the field — not the primary-constructor parameter — in method bodies:
+
+  ```csharp
+  public class UserService(IUserRepository repository, ILogger<UserService> logger) : IUserService
+  {
+      private readonly IUserRepository _repository = repository;
+      private readonly ILogger<UserService> _logger = logger;
+  }
+  ```
+
+- Prefer collection expressions wherever the target type is clear: `[]` for empty collections, `[1, 2, 3]` for literals, and spreads like `[.. items, extra]`. Do **not** write `new List<T>()`, `new T[] { }`, or `Array.Empty<T>()` when a collection expression works:
+
+  ```csharp
+  private readonly List<string> _names = [];
+  string[] merged = [.. first, .. second];
+  ```
 
 ## Formatting
 

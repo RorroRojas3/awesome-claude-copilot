@@ -18,7 +18,7 @@ There is no application source code here. This repo is purely a portable set of 
 │   │   ├── csharp.md                       → **/*.cs
 │   │   ├── aspnet-rest-apis.md             → **/*.cs, **/*.json
 │   │   ├── azure-functions-csharp.md       → **/*.cs, **/host.json, **/local.settings.json, **/*.csproj
-│   │   ├── blazor.md                       → **/*.razor, **/*.razor.cs, **/*.razor.css
+│   │   ├── blazor-wasm.md                  → **/*.razor, **/*.razor.cs, **/*.razor.css
 │   │   ├── csharp-mcp-server.md            → **/*.cs, **/*.csproj
 │   │   └── terraform.md                    → **/*.tf
 │   ├── skills/                   # Invokable skills (Skill tool)
@@ -64,7 +64,7 @@ Framework specifics live in `.claude/rules/`, which auto-load when you edit a ma
 | General C# | `csharp.md` |
 | ASP.NET Core REST APIs | `aspnet-rest-apis.md` |
 | Azure Functions (isolated worker) | `azure-functions-csharp.md` |
-| Blazor | `blazor.md` |
+| Blazor WebAssembly (standalone) | `blazor-wasm.md` |
 | MCP servers in C# | `csharp-mcp-server.md` |
 | Terraform | `terraform.md` |
 

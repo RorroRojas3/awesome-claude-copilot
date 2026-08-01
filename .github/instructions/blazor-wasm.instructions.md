@@ -1,77 +1,101 @@
 ---
-description: "Guidelines for building Blazor applications"
+description: "Guidelines for building standalone Blazor WebAssembly applications on .NET 10"
 applyTo: "**/*.razor, **/*.razor.cs, **/*.razor.css"
 ---
 
-## Blazor Code Style and Structure
+# Standalone Blazor WebAssembly (.NET 10)
 
-- Write idiomatic and efficient Blazor and C# code.
-- Follow .NET and Blazor conventions.
-- Use Razor Components appropriately for component-based UI development.
-- Prefer inline functions for smaller components but separate complex logic into code-behind or service classes.
-- Async/await should be used where applicable to ensure non-blocking UI operations.
+These rules target **standalone Blazor WebAssembly** apps (`blazorwasm` template): pure client-side .NET running in the browser, deployed as static files (CDN, static hosting, PWA). Grounded in the official docs at `learn.microsoft.com/aspnet/core/blazor` (`?view=aspnetcore-10.0`).
 
-## Naming Conventions
+## Scope and hosting
 
-- Follow PascalCase for component names, method names, and public members.
-- Use camelCase for private fields and local variables.
-- Prefix interface names with "I" (e.g., IUserService).
+- The "ASP.NET Core Hosted" WASM template was **removed in .NET 8** — never scaffold or suggest the old Client/Server/Shared three-project layout. A standalone WASM app calls its backend as an ordinary web API.
+- Standalone WASM has **no concept of render modes** — `@rendermode`, `InteractiveWebAssembly`, `InteractiveAuto`, prerendering, and `.Client` projects are Blazor Web App concerns. Never suggest them here.
+- Everything shipped to the browser is inspectable: **never put secrets, API keys, or private business logic in the app**. Sensitive work belongs behind a server API.
+- Apply the general C# standards (`csharp.instructions.md`): C# 14, primary constructors with `private readonly` `_camelCase` field capture, collection expressions, `is null` / `is not null`.
 
-## Blazor and .NET Specific Guidelines
+## Components and rendering performance
 
-- Utilize Blazor's built-in features for component lifecycle (e.g., OnInitializedAsync, OnParametersSetAsync).
-- Use data binding effectively with @bind.
-- Leverage Dependency Injection for services in Blazor.
-- Structure Blazor components and services following Separation of Concerns.
-- Always use the latest version C#, currently C# 13 features like record types, pattern matching, and global usings.
+- Prefer **primitive immutable parameter types** (`string`, `int`, `bool`, `DateTime`) so built-in change detection can skip child subtrees; for complex parameters, override `ShouldRender` with your own change tracking on hot components.
+- Use `Virtualize<TItem>` for long lists (`ItemsProvider` for remote data, tune `ItemSize`/`OverscanCount`); `QuickGrid` has virtualization built in.
+- Put `@key` **on the repeated element or component itself**, not on a wrapper — and only when preserving instances/element state matters; it has a small cost otherwise.
+- Avoid thousands of tiny component instances (~0.06 ms overhead each in WASM): inline repeated children or use reusable `RenderFragment` fields instead of dedicated components.
+- Event handlers trigger an automatic `StateHasChanged`; for handlers that don't change state, use the `EventUtil`/`IHandleEvent` pattern to suppress it (dispatch exceptions via `DispatchExceptionAsync` so error boundaries still see them).
+- Never compute `RenderTreeBuilder` sequence numbers (`seq++`) — hardcode literals (analyzer ASP0006); prefer `.razor` markup over manual `RenderTreeBuilder` code entirely.
+- Use lifecycle methods correctly: `OnInitializedAsync` for one-time init, `OnParametersSetAsync` for parameter-driven work, `OnAfterRender{Async}` for anything touching `ElementReference`.
 
-## Error Handling and Validation
+## State management
 
-- Implement proper error handling for Blazor pages and API calls.
-- Use logging for error tracking in the backend and consider capturing UI-level errors in Blazor with tools like ErrorBoundary.
-- Implement validation using FluentValidation or DataAnnotations in forms.
+- Share state via DI-registered **state container services** (in WASM, scoped ≈ singleton for the app's lifetime) and cascading values for ancestor→descendant flow. Blazor has no opinionated store; keep containers simple and notify with events/`Action` callbacks that call `StateHasChanged`.
+- Persist across reloads with `localStorage` (survives restarts, shared across tabs) or `sessionStorage` (per-tab) via JS interop or a package such as Blazored.LocalStorage.
+- **`ProtectedLocalStorage`/`ProtectedSessionStorage` are server-side Blazor only** — they rely on server Data Protection and must never be suggested in WASM.
+- Client-side storage is user-visible and tamperable — no sensitive data, ever. Durable, cross-device state belongs in server storage behind a web API.
 
-## Blazor API and Performance Optimization
+## HTTP and APIs
 
-- Utilize Blazor server-side or WebAssembly optimally based on the project requirements.
-- Use asynchronous methods (async/await) for API calls or UI actions that could block the main thread.
-- Optimize Razor components by reducing unnecessary renders and using StateHasChanged() efficiently.
-- Minimize the component render tree by avoiding re-renders unless necessary, using ShouldRender() where appropriate.
-- Use EventCallbacks for handling user interactions efficiently, passing only minimal data when triggering events.
+- `HttpClient` in WASM is implemented on the browser **Fetch API**. Register the base client once: `builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });` for a same-origin API; use named/typed clients (`AddHttpClient`, `Microsoft.Extensions.Http`) for multiple or external APIs.
+- Use `System.Net.Http.Json` helpers (`GetFromJsonAsync`, `PostAsJsonAsync`) and wrap calls in `try`/`catch` with user-facing feedback.
+- **.NET 10: response streaming is on by default** — `ReadAsStreamAsync` returns a `BrowserHttpReadStream` that throws on synchronous reads. Opt out per request with `SetBrowserResponseStreamingEnabled(false)` or globally with `<WasmEnableStreamingResponse>false</WasmEnableStreamingResponse>`.
+- CORS is fixed on the **server/endpoint**, not the client — `NoCors` mode is not a workaround. If you can't configure the external API, relay through your own backend.
+- Attach access tokens with `BaseAddressAuthorizationMessageHandler` (same-origin) or a custom `AuthorizationMessageHandler` configured with `authorizedUrls`/`scopes` wired via `.AddHttpMessageHandler<>()`.
 
-## Caching Strategies
+## Authentication
 
-- Implement in-memory caching for frequently used data, especially for Blazor Server apps. Use IMemoryCache for lightweight caching solutions.
-- For Blazor WebAssembly, utilize localStorage or sessionStorage to cache application state between user sessions.
-- Consider Distributed Cache strategies (like Redis or SQL Server Cache) for larger applications that need shared state across multiple users or clients.
-- Cache API calls by storing responses to avoid redundant calls when data is unlikely to change, thus improving the user experience.
+- Use `Microsoft.AspNetCore.Components.WebAssembly.Authentication`: `AddOidcAuthentication` for any OIDC provider (config in `wwwroot/appsettings.json`), or `Microsoft.Authentication.WebAssembly.Msal` + `AddMsalAuthentication` for Microsoft Entra ID (`DefaultAccessTokenScopes`, `AdditionalScopesToConsent`).
+- Only the **PKCE authorization code flow** is supported — never configure or describe the implicit grant flow.
+- Client-side auth checks and validation are UX only — the server API must enforce authorization and re-validate every request.
 
-## State Management Libraries
+## JS interop
 
-- Use Blazor's built-in Cascading Parameters and EventCallbacks for basic state sharing across components.
-- Implement advanced state management solutions using libraries like Fluxor or BlazorState when the application grows in complexity.
-- For client-side state persistence in Blazor WebAssembly, consider using Blazored.LocalStorage or Blazored.SessionStorage to maintain state between page reloads.
-- For server-side Blazor, use Scoped Services and the StateContainer pattern to manage state within user sessions while minimizing re-renders.
+- Prefer **JS isolation via ES modules**: `_module = await JS.InvokeAsync<IJSObjectReference>("import", "./scripts/foo.js")`; dispose the `IJSObjectReference` in `DisposeAsync`.
+- `ElementReference` is only valid from `OnAfterRender{Async}` onward.
+- WASM-only optimization: cast to `IJSInProcessRuntime` / `IJSInProcessObjectReference` for synchronous calls when the overhead of async round-trips matters.
+- For high-frequency interop, use source-generated `[JSImport]`/`[JSExport]` (`System.Runtime.InteropServices.JavaScript`); `IJSUnmarshalledRuntime` is obsolete. .NET 10 adds `InvokeConstructorAsync`, `GetValueAsync`/`SetValueAsync` for JS objects and properties.
+- Crossing the interop boundary per DOM property is slow and churns the GC — batch DOM work inside JS.
 
-## API Design and Integration
+## Error handling and logging
 
-- Use HttpClient or other appropriate services to communicate with external APIs or your own backend.
-- Implement error handling for API calls using try-catch and provide proper user feedback in the UI.
+- Use **narrowly scoped `ErrorBoundary`** components; subclass and override `OnErrorAsync` to log; call `Recover()` from `OnParametersSet` on navigation for broadly scoped boundaries. Don't leak exception details to users.
+- Exceptions from timers/callbacks outside the lifecycle bypass boundaries — dispatch them with `ComponentBase.DispatchExceptionAsync`.
+- `ILogger<T>` works but writes to the **browser dev-tools console only**. Configure levels via `builder.Logging` or `wwwroot/appsettings.json` + `AddConfiguration`. For persisted telemetry, log to a backend API or the Application Insights JS SDK via interop — there is still no native WASM App Insights SDK.
+- Never log secrets or PII — client-side logs are fully visible to the user.
 
-## Testing and Debugging in Visual Studio
+## Performance, size, and startup
 
-- All unit testing and integration testing should be done in Visual Studio Enterprise.
-- Test Blazor components and services using xUnit, NUnit, or MSTest.
-- Use Moq or NSubstitute for mocking dependencies during tests.
-- Debug Blazor UI issues using browser developer tools and Visual Studio's debugging tools for backend and server-side issues.
-- For performance profiling and optimization, rely on Visual Studio's diagnostics tools.
+- Publish with IL trimming; install the `wasm-tools` workload so publish also does runtime relinking.
+- **AOT** (`<RunAOTCompilation>true</RunAOTCompilation>`): roughly 2× download size for a large CPU-bound speedup — reserve it for compute-heavy apps; `<WasmStripILAfterAOT>true</WasmStripILAfterAOT>` claws back size. The default interpreter + jiterpreter is fine for most CRUD UIs.
+- **Lazy-load assemblies** by route: `<BlazorWebAssemblyLazyLoad Include="Heavy.Feature.wasm" />` (Webcil means the extension is **`.wasm`, not `.dll`**) + `LazyAssemblyLoader.LoadAssembliesAsync` in `Router.OnNavigateAsync`.
+- Publish output is precompressed (Brotli + gzip) — verify the host actually serves it (`Content-Encoding: br` in dev tools); static hosts without content negotiation need the `decode.min.js` + `loadBootResource` pattern.
+- .NET 10 changes to respect: `blazor.boot.json` is gone (boot config is inlined into `dotnet.js`); `BlazorCacheBootResources` and Blazor's custom cache are removed (standard HTTP caching + fingerprinting instead); enable client-side fingerprinting/preloading with `<OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>`; set the environment with `<WasmApplicationEnvironmentName>` (not the `Blazor-Environment` header).
+- Customize the loading UI via the template's CSS custom properties (`--blazor-load-percentage`, `--blazor-load-percentage-text`).
 
-## Security and Authentication
+## PWA
 
-- Implement Authentication and Authorization in the Blazor app where necessary using ASP.NET Identity or JWT tokens for API authentication.
-- Use HTTPS for all web communication and ensure proper CORS policies are implemented.
+- Offline support only works **when published** — the dev `service-worker.js` is a no-op; always test published output.
+- Register the worker with `navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' })` (the .NET 10 template default; recommended for every version).
+- The cache-first atomic snapshot means users may run **any historical version** until all tabs close — never ship backward-incompatible API changes without a compatibility strategy.
+- Offline users cannot authenticate or acquire tokens — design auth-dependent features accordingly. Adopt offline support deliberately; it adds real complexity.
 
-## API Documentation and Swagger
+## Forms and validation
 
-- Use Swagger/OpenAPI for API documentation for your backend API services.
-- Ensure XML documentation for models and API methods for enhancing Swagger documentation.
+- `EditForm` + `Model` (or `EditContext` for advanced control) + `DataAnnotationsValidator` + `ValidationSummary`/`ValidationMessage`; prefer `OnValidSubmit`.
+- For FluentValidation or other third-party systems, use a custom validator component that manages a `ValidationMessageStore` against the cascaded `EditContext` in place of `DataAnnotationsValidator`.
+- .NET 10 opt-in nested/collection validation: `builder.Services.AddValidation()` + `[ValidatableType]` on the root model; **model classes must live in `.cs` files, not `.razor`** (source-generator limitation); `[SkipValidation]` to exclude members.
+- Client validation is UX, not security — the server API re-validates everything it receives.
+
+## Testing
+
+- Unit test components with **bUnit** + xUnit, run via `dotnet test`: render with `TestContext`, interact via `Find(...)`, assert with `MarkupMatches` (semantic HTML comparison — stable against whitespace churn). Mock `IJSRuntime` and injected services (Moq/NSubstitute).
+- Use **Playwright for .NET** for end-to-end tests when behavior depends on real DOM manipulation or hard-to-mock JS libraries.
+
+## Outdated patterns — never suggest these
+
+- The "ASP.NET Core Hosted" WASM template or Client/Server/Shared solution layout (removed in .NET 8).
+- `@rendermode` / `InteractiveWebAssembly` / `InteractiveAuto` / prerendering in a standalone app — Blazor Web App concepts only.
+- `ProtectedLocalStorage`/`ProtectedSessionStorage` in WASM (server-side only).
+- `IJSUnmarshalledRuntime` (obsolete — use `[JSImport]`/`[JSExport]`).
+- The OIDC implicit grant flow (PKCE code flow only).
+- `.dll` names in `BlazorWebAssemblyLazyLoad` items (Webcil uses `.wasm`).
+- References to `blazor.boot.json` or `BlazorCacheBootResources` (removed in .NET 10).
+- Synchronous reads on HTTP response streams (streaming is the .NET 10 default).
+- Registering the PWA service worker without `{ updateViaCache: 'none' }`.

@@ -23,10 +23,12 @@ Apply these to all C# you write or review. The detailed source of truth is in `.
 - Prefer pattern matching and switch expressions.
 - Use `nameof(...)` instead of string literals for member names.
 - Put a newline before the opening `{` of every block; keep a method's final `return` on its own line.
+- Prefer **primary constructors**; capture each injected dependency into a `private readonly` `_camelCase` field (`private readonly IUserRepository _repository = repository;`) and use the field in method bodies.
+- Prefer **collection expressions** (`[]`, `[1, 2, 3]`, `[.. items]`) over `new List<T>()`, `new T[] { }`, or `Array.Empty<T>()`.
 
 **Naming**
 
-- PascalCase for types, methods, and public members; camelCase for private fields and locals; prefix interfaces with `I` (e.g. `IUserService`).
+- PascalCase for types, methods, and public members; `_camelCase` for private fields (e.g. `_userService`); camelCase for locals and parameters; prefix interfaces with `I` (e.g. `IUserService`).
 
 **Nullable reference types**
 
@@ -103,13 +105,15 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 | General C#                        | `.claude/rules/csharp.md`                 | `**/*.cs`                                                          |
 | REST / ASP.NET Core APIs          | `.claude/rules/aspnet-rest-apis.md`       | `**/*.cs`, `**/*.json`                                             |
 | Azure Functions (isolated worker) | `.claude/rules/azure-functions-csharp.md` | `**/*.cs`, `**/host.json`, `**/local.settings.json`, `**/*.csproj` |
-| Blazor components                 | `.claude/rules/blazor.md`                 | `**/*.razor`, `**/*.razor.cs`, `**/*.razor.css`                    |
+| Blazor WebAssembly (standalone)   | `.claude/rules/blazor-wasm.md`            | `**/*.razor`, `**/*.razor.cs`, `**/*.razor.css`                    |
 | MCP servers in C#                 | `.claude/rules/csharp-mcp-server.md`      | `**/*.cs`, `**/*.csproj`                                           |
 | Terraform                         | `.claude/rules/terraform.md`              | `**/*.tf`                                                          |
 
 ## MCP servers — see `@.mcp.json`
 
 `.claude/settings.json` sets `enableAllProjectMcpServers: true`, so the servers configured in `@.mcp.json` are available. Use them when relevant:
+
+> **Trust gate:** since Claude Code v2.1.196, a checked-in `.claude/settings.json` cannot approve its own repo's MCP servers while the folder is **untrusted** — the key is ignored and servers sit at "Pending approval" until the workspace trust dialog is accepted. To have these servers auto-approve in every repo (even before trusting), add a name-based list to your **user-level** `~/.claude/settings.json`: `"enabledMcpjsonServers": ["microsoft-learn", "terraform", "angular-cli", "context7"]`. If a server shows **Rejected**, a stale per-project choice is cached — run `claude mcp reset-project-choices` in that repo.
 
 - **`microsoft-learn`** — Ground .NET/Azure answers in official Microsoft Learn docs. Before answering a version-specific .NET or Azure question, query it (`microsoft_docs_search` → `microsoft_code_sample_search` → `microsoft_docs_fetch`) instead of relying on memory.
 - **`angular-cli`** — Ground Angular answers in the installed Angular version rather than memory (`list_projects` → `get_best_practices` → `search_documentation` → `find_examples`). Use it for components, zoneless, routing, and CLI work; for state management, the `ngrx-signal-store` skill is the source of truth.

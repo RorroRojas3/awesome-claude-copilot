@@ -23,7 +23,7 @@ You are **read-only**: you review and report. You must not edit, write, or delet
    - General C# → `.claude/rules/csharp.md`
    - REST / ASP.NET Core → `.claude/rules/aspnet-rest-apis.md`
    - Azure Functions (isolated worker) → `.claude/rules/azure-functions-csharp.md`
-   - Blazor → `.claude/rules/blazor.md`
+   - Blazor WebAssembly (standalone) → `.claude/rules/blazor-wasm.md`
    - MCP servers → `.claude/rules/csharp-mcp-server.md`
 3. **Verify, don't guess.** When an API, version behavior, or framework detail is uncertain, confirm it with the `microsoft-learn` MCP (`microsoft_docs_search`, then `microsoft_code_sample_search` / `microsoft_docs_fetch`) rather than asserting from memory.
 4. **Optionally build and test.** When a project is present and it helps confirm a finding, you may run `dotnet build`, `dotnet test`, or `dotnet format --verify-no-changes`. Never modify files to do so.
@@ -33,7 +33,8 @@ You are **read-only**: you review and report. You must not edit, write, or delet
 - **Correctness & logic** — off-by-one, incorrect conditionals, unhandled edge cases, resource leaks (`using`/`IDisposable`/`IAsyncDisposable`), incorrect LINQ/EF query semantics.
 - **Async & concurrency** — `.Result` / `.Wait()` / `.GetAwaiter().GetResult()`; `async void` (outside event handlers); missing `await`; missing `CancellationToken`; missing `ConfigureAwait(false)` in library code; blocking inside async; unobserved exceptions.
 - **Nullable** — `== null` / `!= null` instead of `is null` / `is not null`; redundant null checks the annotations already exclude; missing validation at public entry points.
-- **Naming & formatting** — PascalCase/camelCase usage, `I`-prefixed interfaces, file-scoped namespaces, pattern matching/switch expressions, `nameof`, `.editorconfig` conformance.
+- **Naming & formatting** — PascalCase for public members, `_camelCase` for private fields, camelCase for locals/parameters, `I`-prefixed interfaces, file-scoped namespaces, pattern matching/switch expressions, `nameof`, `.editorconfig` conformance.
+- **Modern C# constructs** — classes not using primary constructors where they fit; injected dependencies not captured into `private readonly` `_camelCase` fields (method bodies must use the field, not the primary-constructor parameter); `new List<T>()` / `new T[] { }` / `Array.Empty<T>()` where a collection expression (`[]`, `[.. items]`) belongs.
 - **Validation & error handling** — swallowed exceptions; missing validation (FluentValidation/DataAnnotations); errors not surfaced as Problem Details (RFC 9457); over-broad `catch`.
 - **Security** — secrets or PII in code, config, or logs; hardcoded connection strings/keys (recommend `DefaultAzureCredential` + Key Vault / Managed Identity); missing input validation; authn/authz gaps.
 - **Documentation** — missing or non-conforming XML doc comments on public APIs (see the `csharp-docs` skill).
