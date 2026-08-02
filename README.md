@@ -38,13 +38,13 @@ There is no application source code here. This repo is purely a portable set of 
 │   │       ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
 │   │       └── references/                 # read on demand, not loaded up front
 │   ├── agents/                   # Subagents
-│   │   ├── csharp-code-reviewer.md         # Sonnet, read-only C#/.NET review
-│   │   ├── angular-code-reviewer.md        # Sonnet, read-only Angular review
-│   │   ├── github-actions-reviewer.md      # Opus, read-only workflow review
-│   │   └── se-technical-writer.md          # Haiku, writes docs under docs/
+│   │   ├── csharp-code-reviewer.md         # Sonnet (xhigh), read-only C#/.NET review
+│   │   ├── angular-code-reviewer.md        # Sonnet (xhigh), read-only Angular review
+│   │   ├── github-actions-reviewer.md      # Opus (xhigh), read-only workflow review
+│   │   └── se-technical-writer.md          # Sonnet (xhigh), writes docs under docs/
 │   ├── commands/                 # Slash commands
 │   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
-│   ├── settings.json             # Model + MCP defaults
+│   ├── settings.json             # Model, effort (xhigh) + MCP defaults
 │   └── skills-lock.json          # pin for the installed angular-developer skill
 │
 ├── .vscode/mcp.json              # same MCP servers, for GitHub Copilot in VS Code
@@ -153,6 +153,6 @@ Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has 
 ## Conventions for contributors
 
 - **Rules:** a `.claude/rules/*.md` file with a `paths:` block list applies only to matching files; without `paths:` it loads at launch for every session.
-- **Subagents:** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), and either a comma-separated `tools` list or a `skills:` list.
+- **Subagents:** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), an `effort` level (`low`/`medium`/`high`/`xhigh`/`max` — this repo pins every agent to `xhigh`, matching the `"effortLevel": "xhigh"` default in `settings.json`), and either a comma-separated `tools` list or a `skills:` list.
 - **Skills:** one folder per skill containing `SKILL.md` with `name` and `description` frontmatter. Keep `SKILL.md` under ~500 lines; anything longer belongs in `references/`, pointed to from a table that says *when* to read each file.
 - **Never hand-edit the shas in `sources.json`.** They are machine-maintained — run `node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs --pin`.
