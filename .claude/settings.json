@@ -4,6 +4,7 @@
   },
   "model": "fable",
   "availableModels": ["fable"],
+  "effortLevel": "xhigh",
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "microsoft-learn",

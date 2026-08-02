@@ -9,7 +9,7 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 - `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`).
 - `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `github-actions-reviewer`, `se-technical-writer`).
 - `commands/` — slash commands (`/ngrx-signals-sync`).
-- `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, skill-pinning, and MCP server configuration.
+- `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, default reasoning effort (`"effortLevel": "xhigh"`), skill-pinning, and MCP server configuration.
 - `CHANGELOG.md` (repo root) — running record of features and notable changes, maintained by the `se-technical-writer` subagent (see [Changelog & feature tracking](#changelog--feature-tracking)).
 
 ## C# coding standards (always)
@@ -122,10 +122,12 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 
 ## Delegation rules
 
-- **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Sonnet, with the C# and `ef-core` skills preloaded). It reports findings; it does not edit files.
-- **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Sonnet, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
-- **After writing or modifying GitHub Actions workflows** (`.github/workflows/*.yml` or composite actions), delegate a review to the `github-actions-reviewer` subagent (runs on Opus, with the three `github-actions-*` skills preloaded). It reports findings; it does not edit files.
-- **After a feature is implemented and the relevant reviewer verdict passes**, ALWAYS delegate to the `se-technical-writer` subagent to author or update Markdown docs under `docs/` (create the folder if it does not exist) **and** add the entry to the root `CHANGELOG.md` under `[Unreleased]`. Also delegate to it whenever implementation details need documenting on their own.
+Every subagent is pinned to **extra-high reasoning effort** (`effort: xhigh` in its frontmatter), and `settings.json` sets the same session-wide default (`"effortLevel": "xhigh"`), so agents stay at extra-high even if the session level is lowered.
+
+- **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Sonnet at `xhigh` effort, with the C# and `ef-core` skills preloaded). It reports findings; it does not edit files.
+- **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Sonnet at `xhigh` effort, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
+- **After writing or modifying GitHub Actions workflows** (`.github/workflows/*.yml` or composite actions), delegate a review to the `github-actions-reviewer` subagent (runs on Opus at `xhigh` effort, with the three `github-actions-*` skills preloaded). It reports findings; it does not edit files.
+- **After a feature is implemented and the relevant reviewer verdict passes**, ALWAYS delegate to the `se-technical-writer` subagent (runs on Sonnet at `xhigh` effort) to author or update Markdown docs under `docs/` (create the folder if it does not exist) **and** add the entry to the root `CHANGELOG.md` under `[Unreleased]`. Also delegate to it whenever implementation details need documenting on their own.
 
 ## Changelog & feature tracking
 
