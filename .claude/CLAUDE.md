@@ -6,8 +6,8 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 
 - `CLAUDE.md` — this file (always-on standards + delegation rules).
 - `rules/` — detailed standards that **auto-apply by file type** (see [Detailed standards](#detailed-standards--clauderules)).
-- `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`).
-- `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `github-actions-reviewer`, `se-technical-writer`).
+- `skills/` — invokable best-practice skills (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`, `prd`).
+- `agents/` — subagents (`angular-code-reviewer`, `csharp-code-reviewer`, `github-actions-reviewer`, `prd-generator`, `se-technical-writer`).
 - `commands/` — slash commands (`/ngrx-signals-sync`).
 - `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, default reasoning effort (`"effortLevel": "xhigh"`), skill-pinning, and MCP server configuration.
 - `CHANGELOG.md` (repo root) — running record of features and notable changes, maintained by the `se-technical-writer` subagent (see [Changelog & feature tracking](#changelog--feature-tracking)).
@@ -95,6 +95,7 @@ Available via the Skill tool:
 - `github-actions-runtime-upgrade-conventions` — upgrade actions to supported runtimes and safe versions. These three are the lane skills preloaded by the `github-actions-reviewer` subagent, but each is also invokable on its own.
 - `angular-developer` — the official Angular team agent skill (from <https://angular.dev/ai/agent-skills>, installed from `github.com/angular/skills`). General Angular implementation guidance with progressive disclosure: `SKILL.md` routes to `references/` files for components, signals (`linkedSignal`, `resource`, effects), forms (incl. Signal Forms), DI, routing/SSR, styling, and testing. For state management, `ngrx-signal-store` remains the source of truth.
 - `ngrx-signal-store` — NgRx Signal Store patterns for Angular. Uses progressive disclosure: `SKILL.md` carries the decision rules, and `references/` files (entities, async/RxJS, custom features, testing, events, recipes, API) are read only when needed. Pinned to a specific `@ngrx/signals` version and refreshed with `/ngrx-signals-sync`.
+- `prd` — writing Product Requirements Documents and breaking features into epics and user stories with acceptance criteria, priorities, estimates, and dependencies. Progressive disclosure: `SKILL.md` carries the workflow and quality bar; `references/` holds the canonical PRD template, the story-breakdown rules, and the GitHub-issue recipes. Preloaded by the `prd-generator` subagent; mirrored to the Copilot harness.
 
 ## Detailed standards — `.claude/rules/`
 
@@ -124,6 +125,7 @@ The full guidelines live in `.claude/rules/` and **load automatically when you e
 
 Every subagent is pinned to **extra-high reasoning effort** (`effort: xhigh` in its frontmatter), and `settings.json` sets the same session-wide default (`"effortLevel": "xhigh"`), so agents stay at extra-high even if the session level is lowered.
 
+- **When the user asks to write a PRD, spec a feature, define requirements, or break a feature into epics/user stories**, delegate to the `prd-generator` subagent (runs on Sonnet at `xhigh` effort, with the `prd` skill preloaded) — do not write PRDs inline. Its report always starts with a `PRD-STATUS:` line. If it starts `PRD-STATUS: NEEDS-INPUT`, show its questions to the user verbatim (do not answer them yourself) and re-invoke the agent with the answers. It only creates GitHub issues when re-invoked with a statement that the user explicitly approved issue creation for the PRD path. `docs/prd/` is owned by `prd-generator`; a PRD is a pre-implementation artifact — writing one gets no `se-technical-writer` delegation and no changelog entry. Implementation plans for a feature that has a PRD should reference its story IDs (`US-xxx`).
 - **After implementing or modifying C# code**, delegate a quality review to the `csharp-code-reviewer` subagent (runs on Sonnet at `xhigh` effort, with the C# and `ef-core` skills preloaded). It reports findings; it does not edit files.
 - **After implementing or modifying Angular code**, delegate a quality review to the `angular-code-reviewer` subagent (runs on Sonnet at `xhigh` effort, with the `angular-developer` and `ngrx-signal-store` skills preloaded). It reports findings; it does not edit files.
 - **After writing or modifying GitHub Actions workflows** (`.github/workflows/*.yml` or composite actions), delegate a review to the `github-actions-reviewer` subagent (runs on Opus at `xhigh` effort, with the three `github-actions-*` skills preloaded). It reports findings; it does not edit files.

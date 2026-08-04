@@ -39,6 +39,7 @@ Before working in an area, read that skill's `SKILL.md`, then only the reference
 | `github-actions-runtime-upgrade-conventions` | upgrading actions to supported runtimes and safe versions |
 | `angular-developer` | general Angular (components, signals, forms, DI, routing, SSR, testing) |
 | `ngrx-signal-store` | NgRx Signal Store state management (source of truth for state) |
+| `prd` | writing PRDs and breaking features into epics/user stories with acceptance criteria, priorities, estimates, and dependencies |
 
 ## Path-scoped instructions — `.github/instructions/`
 
@@ -55,9 +56,10 @@ These apply automatically (via `applyTo` globs) when working on matching files; 
 
 ## Custom agents — `.github/agents/`
 
-Intended flow: plan with **Planner Expert** → hand off to the recommended implementation agent → that agent invokes the matching code-reviewer subagent → once the verdict passes, it invokes the **SE Technical Writer** subagent to document the feature under `docs/` and add the `CHANGELOG.md` entry before finishing. Any agent that modified GitHub Actions workflows also invokes the **GitHub Actions Reviewer** on those files.
+Intended flow: (optional) spec with **PRD Generator** → plan with **Planner Expert** → hand off to the recommended implementation agent → that agent invokes the matching code-reviewer subagent → once the verdict passes, it invokes the **SE Technical Writer** subagent to document the feature under `docs/` and add the `CHANGELOG.md` entry before finishing. Any agent that modified GitHub Actions workflows also invokes the **GitHub Actions Reviewer** on those files.
 
-- **Planner Expert** — researches and outlines a plan, then routes via handoff buttons (VS Code).
+- **PRD Generator** — interactive PRD chat mode (VS Code): asks clarifying questions, analyzes the codebase, and writes a PRD under `docs/prd/` per the `prd` skill — epics and user stories with acceptance criteria, priorities, estimates, and dependencies. Creates GitHub issues from the stories only after explicit approval, then hands off to the Planner Expert. A PRD is a pre-implementation artifact — it gets no changelog entry.
+- **Planner Expert** — researches and outlines a plan, then routes via handoff buttons (VS Code). When `docs/prd/` holds a PRD for the feature, it plans against the PRD's story IDs.
 - **C# Expert** — general C#/.NET implementation.
 - **C# MCP Server Expert** — Model Context Protocol servers in C#.
 - **C#/.NET Janitor** — cleanup, modernization, tech-debt remediation.
