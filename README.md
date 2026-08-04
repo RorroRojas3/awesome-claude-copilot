@@ -1,10 +1,26 @@
 # awesome-claude-copilot
 
-A curated, reusable **[Claude Code](https://code.claude.com)** configuration for **C#/.NET back ends and Angular front ends**, packaged so you can drop it into your own repository.
+[![Claude Code](https://img.shields.io/badge/Claude_Code-config-d97757?logo=claude&logoColor=white)](https://code.claude.com)
+[![GitHub Copilot](https://img.shields.io/badge/GitHub_Copilot-config-8957e5?logo=githubcopilot&logoColor=white)](https://github.com/features/copilot)
+[![.NET](https://img.shields.io/badge/.NET-C%23_14-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com)
+[![Angular](https://img.shields.io/badge/Angular-NgRx_Signals-DD0031?logo=angular&logoColor=white)](https://angular.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/RorroRojas3/awesome-claude-copilot/pulls)
 
-There is no application source code here. This repo is purely a portable set of assistant configuration — project memory, path-scoped rules, skills, subagents, and MCP servers — that encodes a team's standards once instead of re-explaining them in every prompt.
+A curated, reusable **AI-assistant configuration** for **C#/.NET back ends and Angular front ends** — one set of standards, shipped for **two harnesses**: [Claude Code](https://code.claude.com) and [GitHub Copilot](https://github.com/features/copilot). Drop the tree for your harness (or both) into your repository and stop re-explaining your team's standards in every prompt.
 
-> The repo ships two parallel trees: `.claude/` for Claude Code and `.github/` for GitHub Copilot — repository instructions (`copilot-instructions.md`), path-scoped instructions (`instructions/*.instructions.md`), custom agents (`agents/*.agent.md`), reusable prompts (`prompts/*.prompt.md`), and a `skills/` tree mirrored byte-for-byte from `.claude/skills/`. The `.github/` tree is self-contained: nothing in it references `.claude/`. `.vscode/mcp.json` gives Copilot in VS Code the same MCP servers that `.mcp.json` gives Claude Code.
+There is no application source code here. This repo is purely portable assistant configuration: project memory, path-scoped rules, skills, subagents/custom agents, reusable prompts, and MCP servers.
+
+The two trees are parallel and **self-contained** — nothing in `.github/` references `.claude/`:
+
+| Concept | Claude Code (`.claude/`) | GitHub Copilot (`.github/`) |
+| --- | --- | --- |
+| Always-on standards | `CLAUDE.md` | `copilot-instructions.md` |
+| Path-scoped standards | `rules/*.md` | `instructions/*.instructions.md` |
+| Skills | `skills/` | `skills/` — content-identical mirror of `.claude/skills/` (verified at the git-blob level; working-tree line endings may differ on Windows) |
+| Agents | `agents/*.md` (subagents) | `agents/*.agent.md` (custom agents) |
+| Reusable commands | `commands/*.md` (slash commands) | `prompts/*.prompt.md` |
+| MCP servers | `.mcp.json` | `.vscode/mcp.json` |
 
 ---
 
@@ -12,7 +28,7 @@ There is no application source code here. This repo is purely a portable set of 
 
 ```
 .
-├── .claude/
+├── .claude/                      # ── Claude Code harness ──
 │   ├── CLAUDE.md                 # Always-loaded project memory: C# + Angular standards, delegation rules
 │   ├── rules/                    # Path-scoped rules (auto-apply when a matching file is edited)
 │   │   ├── csharp.md                       → **/*.cs
@@ -32,23 +48,35 @@ There is no application source code here. This repo is purely a portable set of 
 │   │   ├── github-actions-runtime-upgrade-conventions/SKILL.md
 │   │   ├── microsoft-agent-framework/      # + references/dotnet.md
 │   │   ├── microsoft-docs/SKILL.md         # Learn MCP first; Context7 for the rest
-│   │   └── ngrx-signal-store/    # Progressive-disclosure skill (see below)
+│   │   ├── ngrx-signal-store/    # Progressive-disclosure, self-updating (see below)
+│   │   │   ├── SKILL.md
+│   │   │   ├── sources.json                # pinned upstream doc shas + @ngrx/signals version
+│   │   │   ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
+│   │   │   └── references/                 # read on demand, not loaded up front
+│   │   └── prd/                  # PRDs + feature → epics/stories breakdown (see below)
 │   │       ├── SKILL.md
-│   │       ├── sources.json                # pinned upstream doc shas + @ngrx/signals version
-│   │       ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
-│   │       └── references/                 # read on demand, not loaded up front
+│   │       └── references/                 # prd-template, story-breakdown, github-issues
 │   ├── agents/                   # Subagents
 │   │   ├── csharp-code-reviewer.md         # Sonnet (xhigh), read-only C#/.NET review
 │   │   ├── angular-code-reviewer.md        # Sonnet (xhigh), read-only Angular review
 │   │   ├── github-actions-reviewer.md      # Opus (xhigh), read-only workflow review
+│   │   ├── prd-generator.md                # Sonnet (xhigh), writes PRDs under docs/prd/
 │   │   └── se-technical-writer.md          # Sonnet (xhigh), writes docs under docs/
 │   ├── commands/                 # Slash commands
 │   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
 │   ├── settings.json             # Model, effort (xhigh) + MCP defaults
 │   └── skills-lock.json          # pin for the installed angular-developer skill
 │
-├── .vscode/mcp.json              # same MCP servers, for GitHub Copilot in VS Code
-└── .mcp.json                     # MCP servers (Claude Code)
+├── .github/                      # ── GitHub Copilot harness (self-contained) ──
+│   ├── copilot-instructions.md   # Repository instructions: standards + agent/skill registry
+│   ├── instructions/             # Path-scoped instructions (applyTo globs) — twins of .claude/rules/
+│   ├── agents/                   # Custom agents (planner, experts, reviewers, PRD generator, writer)
+│   ├── prompts/                  # Reusable prompts (ngrx-signals-sync)
+│   └── skills/                   # Content-identical mirror of .claude/skills/
+│
+├── .vscode/mcp.json              # MCP servers for GitHub Copilot in VS Code
+├── .mcp.json                     # MCP servers for Claude Code
+└── LICENSE                       # MIT
 ```
 
 ---
@@ -57,22 +85,24 @@ There is no application source code here. This repo is purely a portable set of 
 
 **C#/.NET** (latest C# / C# 14): file-scoped namespaces, pattern matching, `nameof`; PascalCase/camelCase and `I`-prefixed interfaces; nullable reference types with `is null` / `is not null`; async (`Async` suffix, no `.Result`/`.Wait()`/`async void`, `CancellationToken`, `ConfigureAwait(false)`); validation (FluentValidation/DataAnnotations) and Problem Details (RFC 9457); `ILogger<T>` structured logging, never logging PII/secrets, `DefaultAzureCredential` + Key Vault; XML doc comments; xUnit conventions.
 
-Framework specifics live in `.claude/rules/`, which auto-load when you edit a matching file:
+Framework specifics live in `.claude/rules/` (Claude Code) and `.github/instructions/` (Copilot), which auto-load when you edit a matching file:
 
-| Topic | Rule |
-| --- | --- |
-| General C# | `csharp.md` |
-| ASP.NET Core REST APIs | `aspnet-rest-apis.md` |
-| Azure Functions (isolated worker) | `azure-functions-csharp.md` |
-| Blazor WebAssembly (standalone) | `blazor-wasm.md` |
-| MCP servers in C# | `csharp-mcp-server.md` |
-| Terraform | `terraform.md` |
+| Topic | Claude Code rule | Copilot instructions |
+| --- | --- | --- |
+| General C# | `csharp.md` | `csharp.instructions.md` |
+| ASP.NET Core REST APIs | `aspnet-rest-apis.md` | `aspnet-rest-apis.instructions.md` |
+| Azure Functions (isolated worker) | `azure-functions-csharp.md` | `azure-functions-csharp.instructions.md` |
+| Blazor WebAssembly (standalone) | `blazor-wasm.md` | `blazor-wasm.instructions.md` |
+| MCP servers in C# | `csharp-mcp-server.md` | `csharp-mcp-server.instructions.md` |
+| Terraform | `terraform.md` | `terraform.instructions.md` |
 
 **Angular**: general implementation guidance via the official `angular-developer` skill; NgRx Signal Store state management — see below.
 
-**GitHub Actions**: workflow security hardening, CI-efficiency audits, and runtime/version upgrades — three skills preloaded by the read-only `github-actions-reviewer` subagent (Opus), each also invokable on its own.
+**GitHub Actions**: workflow security hardening, CI-efficiency audits, and runtime/version upgrades — three skills preloaded by the read-only `github-actions-reviewer` (Opus), each also invokable on its own.
 
-**Skills**: `angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`.
+**Feature specs & backlog breakdown**: the `prd` skill plus a PRD-generator agent turn a feature request into a Product Requirements Document — measurable success criteria and a breakdown into epics and user stories with acceptance criteria, priorities (P0/P1/P2), t-shirt estimates, and dependencies — written to `docs/prd/`, with optional GitHub-issue creation (`gh`) after you approve. On Claude Code the main session delegates to the `prd-generator` subagent; on Copilot the **PRD Generator** chat mode interviews you directly and hands off to the **Planner Expert**, which plans against the PRD's story IDs.
+
+**Skills** (both harnesses): `angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`, `prd`.
 
 ---
 
@@ -119,7 +149,7 @@ To run it on a schedule, drive the command from a loop:
 /loop 7d /ngrx-signals-sync
 ```
 
-A `/loop` only fires while a Claude Code session is open, so treat it as a convenience rather than a guarantee. Because all the logic lives in the command and the script, the same refresh can be driven by `/schedule` as a real cron routine, or by CI (fail the job on exit code 10), without changing the skill.
+A `/loop` only fires while a Claude Code session is open, so treat it as a convenience rather than a guarantee. Because all the logic lives in the command and the script, the same refresh can be driven by `/schedule` as a real cron routine, or by CI (fail the job on exit code 10), without changing the skill. On the Copilot side, the same refresh is available as the `ngrx-signals-sync` prompt.
 
 > The docs are fetched from the markdown behind `ngrx.io` (`ngrx/platform`, `projects/www/src/app/pages/guide/signals/`). `ngrx.io` itself is a JavaScript SPA and cannot be scraped — fetching it returns an empty nav shell, which is why the pipeline points at the source repo.
 
@@ -127,7 +157,7 @@ A `/loop` only fires while a Claude Code session is open, so treat it as a conve
 
 ## MCP servers
 
-Configured in `.mcp.json`; `.claude/settings.json` sets `enableAllProjectMcpServers: true`.
+Configured in `.mcp.json` for Claude Code (`.claude/settings.json` sets `enableAllProjectMcpServers: true`) and in [`.vscode/mcp.json`](.vscode/mcp.json) for GitHub Copilot in VS Code — the same four servers in both:
 
 | Server | Transport | Use |
 | --- | --- | --- |
@@ -136,23 +166,31 @@ Configured in `.mcp.json`; `.claude/settings.json` sets `enableAllProjectMcpServ
 | `terraform` | stdio (Docker: `hashicorp/terraform-mcp-server`) | Infrastructure-as-code |
 | `context7` | stdio (`npx @upstash/context7-mcp`) | Docs outside learn.microsoft.com (VS Code, GitHub, Aspire) — used by the `microsoft-docs` skill |
 
-The same four servers are configured for GitHub Copilot in [`.vscode/mcp.json`](.vscode/mcp.json).
-
 ---
 
 ## Getting started
 
+### Claude Code
+
 1. Copy [`.claude/`](.claude/) and [`.mcp.json`](.mcp.json) into the root of your repository.
 2. Start Claude Code there. It loads `.claude/CLAUDE.md` every session, and the matching `.claude/rules/*.md` whenever you edit a relevant file.
-3. The skills, the `csharp-code-reviewer`, `angular-code-reviewer`, `github-actions-reviewer`, and `se-technical-writer` subagents, and the `/ngrx-signals-sync` command become available. Delegation is described in `CLAUDE.md`: after changing C#, `csharp-code-reviewer` reviews it (read-only); after changing Angular, `angular-code-reviewer`; after changing GitHub Actions workflows, `github-actions-reviewer`; new features or implementation notes go to `se-technical-writer`, which writes Markdown under `docs/`.
+3. The skills, the subagents (`csharp-code-reviewer`, `angular-code-reviewer`, `github-actions-reviewer`, `prd-generator`, `se-technical-writer`), and the `/ngrx-signals-sync` command become available. Delegation is described in `CLAUDE.md`: asking to spec a feature or break it into stories routes to `prd-generator` (writes PRDs under `docs/prd/`); after changing C#, `csharp-code-reviewer` reviews it (read-only); after changing Angular, `angular-code-reviewer`; after changing GitHub Actions workflows, `github-actions-reviewer`; implemented features go to `se-technical-writer`, which writes Markdown under `docs/` and maintains `CHANGELOG.md`.
 
-Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has no dependencies).
+### GitHub Copilot
+
+1. Copy [`.github/`](.github/) and [`.vscode/mcp.json`](.vscode/mcp.json) into the root of your repository.
+2. Copilot loads `.github/copilot-instructions.md` automatically; the path-scoped `instructions/*.instructions.md` apply via their `applyTo` globs.
+3. The custom agents appear in the VS Code agents dropdown. Intended flow: (optional) spec with **PRD Generator** → plan with **Planner Expert** → hand off to the recommended implementation expert (C#, Angular, MCP Server, Full-Stack, Janitor) → its reviewer subagent checks the work → **SE Technical Writer** documents it and updates `CHANGELOG.md`.
+
+Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has no dependencies); the [`gh` CLI](https://cli.github.com) if you want PRD stories turned into GitHub issues.
 
 ---
 
 ## Conventions for contributors
 
-- **Rules:** a `.claude/rules/*.md` file with a `paths:` block list applies only to matching files; without `paths:` it loads at launch for every session.
-- **Subagents:** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), an `effort` level (`low`/`medium`/`high`/`xhigh`/`max` — this repo pins every agent to `xhigh`, matching the `"effortLevel": "xhigh"` default in `settings.json`), and either a comma-separated `tools` list or a `skills:` list.
+- **Both harnesses, always:** a change to standards, skills, or agents lands in `.claude/` **and** its `.github/` twin in the same PR. Sync points: `CLAUDE.md` ↔ `copilot-instructions.md` registries, the two `skills/` trees (keep the mirrored files content-identical — verify with `git hash-object`), and this README's structure diagram and lists.
+- **Rules / instructions:** a `.claude/rules/*.md` file with a `paths:` block list applies only to matching files; without `paths:` it loads at launch for every session. The Copilot twin is an `applyTo:`-scoped `.github/instructions/*.instructions.md`.
+- **Subagents (Claude):** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), an `effort` level (`low`/`medium`/`high`/`xhigh`/`max` — this repo pins every agent to `xhigh`, matching the `"effortLevel": "xhigh"` default in `settings.json`), and either a comma-separated `tools` list or a `skills:` list.
+- **Custom agents (Copilot):** `.github/agents/*.agent.md` frontmatter uses a display-case `name`, `description`, `model` (kept in parity with the Claude twin), lowercase `tools` ids, and optional `argument-hint`, `handoffs`, and `agents`. There is no effort key — Copilot has no equivalent yet.
 - **Skills:** one folder per skill containing `SKILL.md` with `name` and `description` frontmatter. Keep `SKILL.md` under ~500 lines; anything longer belongs in `references/`, pointed to from a table that says *when* to read each file.
 - **Never hand-edit the shas in `sources.json`.** They are machine-maintained — run `node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs --pin`.

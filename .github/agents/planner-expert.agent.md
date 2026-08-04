@@ -77,7 +77,7 @@ Cycle through these phases based on user input. This is iterative, not linear. I
 
 Run the _Explore_ subagent to gather context, analogous existing features to use as implementation templates, and potential blockers or ambiguities. When the task spans multiple independent areas (e.g., frontend + backend, different features, separate repos), launch **2-3 _Explore_ subagents in parallel** — one per area — to speed up discovery.
 
-During discovery, also check `.github/skills/` (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `microsoft-agent-framework`, `ngrx-signal-store`) and name the relevant skills in the plan so the implementing agent loads them before coding. You may #tool:read a skill's `SKILL.md` yourself to ground design decisions.
+During discovery, also check `.github/skills/` (`angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `microsoft-agent-framework`, `ngrx-signal-store`, `prd`) and name the relevant skills in the plan so the implementing agent loads them before coding. You may #tool:read a skill's `SKILL.md` yourself to ground design decisions. If `docs/prd/` contains a PRD for this feature, read it and plan against its story IDs (`US-xxx`) so plan steps trace back to the spec.
 
 Update the plan with your findings.
 
