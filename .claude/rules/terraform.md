@@ -98,7 +98,6 @@ paths:
   - Use clear and concise descriptions to explain the purpose of each variable and output.
   - Use appropriate types for variables (e.g., `string`, `number`, `bool`, `list`, `map`).
 - Document your Terraform configurations using comments, where appropriate.
-  - Use comments to explain the purpose of resources and variables.
   - Use comments to explain complex configurations or decisions.
   - Avoid redundant comments; comments should add value and clarity.
 - Include a `README.md` file in each project to provide an overview of the project and its structure.

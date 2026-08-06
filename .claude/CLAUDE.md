@@ -12,6 +12,20 @@ Reusable project memory for **C#/.NET back ends and Angular front ends**. It loa
 - `settings.json`, `skills-lock.json`, and `.mcp.json` (repo root) — model, default reasoning effort (`"effortLevel": "xhigh"`), skill-pinning, and MCP server configuration.
 - `CHANGELOG.md` (repo root) — running record of features and notable changes, maintained by the `se-technical-writer` subagent (see [Changelog & feature tracking](#changelog--feature-tracking)).
 
+## Communication & comments (always)
+
+**Responses**
+
+- Lead with the answer or the change. No preamble, no filler, no restating the request.
+- Do not re-summarize a plan or diff the user already saw; report only what changed or went wrong.
+- Match length to substance — a one-line answer is a complete answer.
+
+**Code comments**
+
+- Comment only what code cannot say: why a decision was made, constraints, non-obvious invariants, workarounds with links.
+- Never narrate what code does. No per-function comment quota. No change-narration comments ("added X", "now uses Y").
+- XML doc comments on public APIs are API documentation, not comments — that standard stands.
+
 ## C# coding standards (always)
 
 Apply these to all C# you write or review. The detailed source of truth is in `.claude/rules/` and the skills in `.claude/skills/`.
