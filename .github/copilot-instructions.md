@@ -2,6 +2,20 @@
 
 Reusable standards for **C#/.NET back ends and Angular front ends**. This repository contains no application code — it ships GitHub Copilot configuration under `.github/`: these repository instructions, path-scoped instructions (`instructions/`), custom agents (`agents/`), and agent skills (`skills/`). Follow these instructions for all C# and Angular work.
 
+## Communication & comments (always)
+
+**Responses**
+
+- Lead with the answer or the change. No preamble, no filler, no restating the request.
+- Do not re-summarize a plan or diff the user already saw; report only what changed or went wrong.
+- Match length to substance — a one-line answer is a complete answer.
+
+**Code comments**
+
+- Comment only what code cannot say: why a decision was made, constraints, non-obvious invariants, workarounds with links.
+- Never narrate what code does. No per-function comment quota. No change-narration comments ("added X", "now uses Y").
+- XML doc comments on public APIs are API documentation, not comments — that standard stands.
+
 ## C# coding standards (always)
 
 - Target the latest C# version (currently **C# 14**). File-scoped namespaces; single-line `using` directives; honor `.editorconfig`. Prefer pattern matching and switch expressions; use `nameof(...)` instead of string literals for member names. Newline before every opening `{`; a method's final `return` on its own line.
