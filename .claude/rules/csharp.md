@@ -11,6 +11,7 @@ paths:
 - Make only high confidence suggestions when reviewing code changes.
 - Write maintainable code; handle edge cases with clear exception handling.
 - Comment only what code cannot say: why-decisions, constraints, non-obvious invariants. Never restate what the code does or narrate a change.
+- Web/API-specific standards (auth, validation, versioning, performance, deployment) live in `aspnet-rest-apis.md`.
 
 ## Naming Conventions
 
@@ -52,7 +53,7 @@ paths:
 
 - Create projects from the appropriate .NET templates.
 - Organize code with feature folders or domain-driven design; keep models, services, and data access in separate layers.
-- Use the ASP.NET Core 10 configuration system with environment-specific settings.
+- Use the .NET configuration system with environment-specific settings.
 
 ## Nullable Reference Types
 
@@ -67,43 +68,15 @@ paths:
 - Manage schema with migrations; seed data where needed.
 - Write efficient queries — avoid N+1 and over-fetching.
 
-## Authentication and Authorization
-
-- Authenticate with JWT Bearer tokens; integrate Microsoft Entra ID where applicable.
-- Apply role-based or policy-based authorization.
-- Secure controller-based and Minimal APIs consistently.
-
-## Validation and Error Handling
-
-- Validate with DataAnnotations or FluentValidation; customize validation responses when the default shape does not fit.
-- Handle exceptions globally in middleware; return Problem Details (RFC 9457) responses consistently.
-
-## API Versioning and Documentation
-
-- Version APIs — controllers and Minimal APIs alike.
-- Document endpoints, parameters, responses, and authentication with Swagger/OpenAPI.
-
 ## Logging and Monitoring
 
 - Use structured logging (e.g. Serilog) with appropriate log levels.
 - Integrate Application Insights; correlate requests with correlation IDs.
+- Monitor performance, errors, and usage.
 
 ## Testing
 
 - Always include test cases for critical paths of the application.
 - Do not emit "Act", "Arrange" or "Assert" comments.
 - Copy existing style in nearby files for test method names and capitalization.
-- Mock dependencies for isolated unit tests; add integration tests for API endpoints.
-- Test authentication and authorization logic.
-
-## Performance
-
-- Cache appropriately: in-memory, distributed, or response caching.
-- Paginate, filter, and sort large data sets; enable response compression.
-- Measure and benchmark before optimizing.
-
-## Deployment and DevOps
-
-- Containerize with .NET's built-in container support (`dotnet publish --os linux --arch x64 -p:PublishProfile=DefaultContainer`) instead of a manual Dockerfile.
-- Ship through CI/CD to Azure App Service, Azure Container Apps, or comparable hosting.
-- Implement health checks and readiness probes; keep configuration environment-specific per stage.
+- Mock dependencies for isolated unit tests.

@@ -10,6 +10,7 @@ applyTo: "**/*.cs, **/*.json"
 - Build REST APIs on ASP.NET Core 10, using Web API controllers or Minimal APIs.
 - Apply best practices for API design, testing, documentation, and deployment.
 - Note the reasoning behind non-obvious design decisions; no tutorial-style explanations unless asked.
+- General C# standards (naming, formatting, nullability, data access, logging) live in `csharp.instructions.md`.
 
 ## API Design
 
@@ -19,8 +20,6 @@ applyTo: "**/*.cs, **/*.json"
 ## Project Structure
 
 - Create projects from the ASP.NET Core 10 Web API template.
-- Organize code with feature folders or domain-driven design; keep models, services, and data access in separate layers.
-- Use the configuration system with environment-specific settings.
 
 ## Controller-Based APIs
 
@@ -33,13 +32,6 @@ applyTo: "**/*.cs, **/*.json"
 - Organize endpoints with route groups.
 - Use parameter binding, validation, and dependency injection as in controllers.
 - Structure larger Minimal API applications for readability.
-
-## Data Access
-
-- Use Entity Framework Core; choose the provider per environment (SQL Server, SQLite, In-Memory).
-- Apply the repository pattern where it adds value.
-- Manage schema with migrations; seed data where needed.
-- Write efficient queries — avoid N+1 and over-fetching.
 
 ## Authentication and Authorization
 
@@ -56,12 +48,6 @@ applyTo: "**/*.cs, **/*.json"
 
 - Version APIs — controllers and Minimal APIs alike.
 - Document endpoints, parameters, responses, and authentication with Swagger/OpenAPI.
-
-## Logging and Monitoring
-
-- Use structured logging (e.g. Serilog) with appropriate log levels.
-- Integrate Application Insights; correlate requests with correlation IDs.
-- Monitor performance, errors, and usage.
 
 ## Testing
 

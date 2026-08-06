@@ -19,7 +19,7 @@ You are **read-only**: you review and report. You must not edit, write, or delet
 
 ## Skills
 
-Skills live in `.github/skills/`. Each governs one lane of the review — read the `SKILL.md` of each relevant skill before reviewing, then only the reference files it points to:
+Skills (read `.github/skills/<name>/SKILL.md` first, then only its referenced files) — each governs one lane of the review:
 
 - `github-actions-hardening` — **always applies** to any workflow review. Follow its ordered process and read its `references/` files (`injection.md`, `triggers-and-privilege.md`, `permissions-and-tokens.md`, `supply-chain.md`, `report-format.md`) as the review touches each area.
 - `github-actions-efficiency` — when triggers, caching, concurrency, matrices, or CI cost are in scope. Honor its guardrails (never hide required validation, never drop documented matrix legs) and read its `references/` files (`actions.md`, `patterns.md`, `review-rubric.md`, `reporting.md`).
@@ -34,12 +34,11 @@ Skills live in `.github/skills/`. Each governs one lane of the review — read t
 
 ## What to check
 
-- **Script injection** — `${{ }}` interpolation of attacker-influenced event fields (PR titles, branch names, commit messages, issue bodies) directly inside `run:` scripts; untrusted values written to `GITHUB_ENV` / `GITHUB_OUTPUT`; the fix is an intermediate `env:` variable, never inline interpolation.
-- **Privileged triggers** — `pull_request_target` or `workflow_run` checking out or executing fork-controlled code; trigger trust levels mismatched with the permissions and secrets the job can reach.
-- **Supply chain** — third-party actions pinned to full-length commit SHAs with a trailing version comment (e.g. `# v4.3.1`); never mutable references (`@main`, `@latest`, major tags); untrusted or unmaintained actions.
-- **Permissions & secrets** — least-privilege `permissions:` (default `contents: read` at workflow level, job-level overrides only where needed); secrets exposed to logs, outputs, or fork-triggered jobs; long-lived cloud credentials where OIDC (`id-token: write`) fits; self-hosted runners reachable from public-repo triggers.
-- **Efficiency** — missing `concurrency` with `cancel-in-progress: true` on PR builds (and `false` for deployments); missing or ineffective dependency caching (cache keys not hashed from lock files, no `restore-keys`); over-broad triggers running work no one consumes; redundant matrix legs; unbounded artifact retention.
-- **Currency & reliability** — deprecated runner images or action runtimes (e.g. end-of-life Node versions); outdated action majors with known replacements; YAML validity and `actionlint` findings; missing `timeout-minutes` on long-running jobs.
+The full checklists live in the three skills above — follow the lane in scope; headline traps:
+
+- **Hardening** (always) — `${{ }}` interpolation of attacker-influenced event fields inside `run:` scripts (fix via an intermediate `env:` variable, never inline); `pull_request_target` / `workflow_run` checking out or executing fork-controlled code; mutable action references (third-party actions pinned to full-length commit SHAs with a version comment); over-scoped `permissions:` (default `contents: read` at workflow level); secrets exposed to logs, outputs, or fork-triggered jobs; long-lived cloud credentials where OIDC fits; self-hosted runners reachable from public-repo triggers.
+- **Efficiency** — missing `concurrency` with `cancel-in-progress: true` on PR builds (`false` for deployments); missing or ineffective dependency caching; over-broad triggers running work no one consumes; redundant matrix legs; unbounded artifact retention.
+- **Currency & reliability** — deprecated runner images or action runtimes; outdated action majors with known replacements; YAML validity and `actionlint` findings; missing `timeout-minutes` on long-running jobs.
 
 ## Output format
 
