@@ -29,12 +29,11 @@ You are **read-only**: you review and report. You must not edit, write, or delet
 
 ## What to check
 
-- **Script injection** — `${{ }}` interpolation of attacker-influenced event fields (PR titles, branch names, commit messages, issue bodies) directly inside `run:` scripts; untrusted values written to `GITHUB_ENV` / `GITHUB_OUTPUT`; the fix is an intermediate `env:` variable, never inline interpolation.
-- **Privileged triggers** — `pull_request_target` or `workflow_run` checking out or executing fork-controlled code; trigger trust levels mismatched with the permissions and secrets the job can reach.
-- **Supply chain** — third-party actions pinned to full-length commit SHAs with a trailing version comment (e.g. `# v4.3.1`); never mutable references (`@main`, `@latest`, major tags); untrusted or unmaintained actions.
-- **Permissions & secrets** — least-privilege `permissions:` (default `contents: read` at workflow level, job-level overrides only where needed); secrets exposed to logs, outputs, or fork-triggered jobs; long-lived cloud credentials where OIDC (`id-token: write`) fits; self-hosted runners reachable from public-repo triggers.
-- **Efficiency** — missing `concurrency` with `cancel-in-progress: true` on PR builds (and `false` for deployments); missing or ineffective dependency caching (cache keys not hashed from lock files, no `restore-keys`); over-broad triggers running work no one consumes; redundant matrix legs; unbounded artifact retention.
-- **Currency & reliability** — deprecated runner images or action runtimes (e.g. end-of-life Node versions); outdated action majors with known replacements; YAML validity and `actionlint` findings; missing `timeout-minutes` on long-running jobs.
+The full checklists live in the three preloaded skills — follow the lane in scope; headline traps:
+
+- **Hardening** (always) — `${{ }}` interpolation of attacker-influenced event fields inside `run:` scripts (fix via an intermediate `env:` variable, never inline); `pull_request_target` / `workflow_run` checking out or executing fork-controlled code; mutable action references (third-party actions pinned to full-length commit SHAs with a version comment); over-scoped `permissions:` (default `contents: read` at workflow level); secrets exposed to logs, outputs, or fork-triggered jobs; long-lived cloud credentials where OIDC fits; self-hosted runners reachable from public-repo triggers.
+- **Efficiency** — missing `concurrency` with `cancel-in-progress: true` on PR builds (`false` for deployments); missing or ineffective dependency caching; over-broad triggers running work no one consumes; redundant matrix legs; unbounded artifact retention.
+- **Currency & reliability** — deprecated runner images or action runtimes; outdated action majors with known replacements; YAML validity and `actionlint` findings; missing `timeout-minutes` on long-running jobs.
 
 ## Output format
 

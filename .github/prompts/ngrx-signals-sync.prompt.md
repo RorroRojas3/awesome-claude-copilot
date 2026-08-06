@@ -57,7 +57,19 @@ node .github/skills/ngrx-signal-store/scripts/check-updates.mjs --pin
 
 This rewrites the shas, the version, and `pinnedAt` from live upstream. Do not hand-edit shas — the script is there so that no one has to transcribe seventeen hex strings correctly.
 
-## 5. Report, and leave the diff for review
+## 5. Mirror into `.claude/skills/` (if present)
+
+If this repo carries the Claude Code twin (`.claude/skills/ngrx-signal-store/` exists), copy every file you touched — including `sources.json` — into it so the two trees stay byte-for-byte identical:
+
+```bash
+cp .github/skills/ngrx-signal-store/SKILL.md .claude/skills/ngrx-signal-store/SKILL.md
+cp .github/skills/ngrx-signal-store/sources.json .claude/skills/ngrx-signal-store/sources.json
+cp .github/skills/ngrx-signal-store/references/<changed>.md .claude/skills/ngrx-signal-store/references/
+```
+
+Skip this step entirely when `.claude/skills/` does not exist.
+
+## 6. Report, and leave the diff for review
 
 Summarize: which pages changed, what materially changed in each, which skill files you edited, and anything you deliberately chose not to propagate.
 

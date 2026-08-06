@@ -27,17 +27,6 @@ tools:
     web,
     "microsoft-learn/*",
     "github/*",
-    vscodeTasks/createAndRunTask,
-    vscodeTasks/runTask,
-    vscodeTasks/getTaskOutput,
-    vscodeTasks/problems,
-    vscodeGeneral/extensions,
-    vscodeGeneral/installExtension,
-    vscodeGeneral/newWorkspace,
-    vscodeGeneral/runCommand,
-    vscodeGeneral/vscodeAPI,
-    vscodeGeneral/runTests,
-    vscodeGeneral/testFailure,
   ]
 agents: ["C# Code Reviewer", "SE Technical Writer", "GitHub Actions Reviewer"]
 ---
@@ -48,25 +37,16 @@ Perform janitorial tasks on C#/.NET codebases. Focus on code cleanup, modernizat
 
 ## Skills
 
-Skills live in `.github/skills/`. Before starting a task area, read the `SKILL.md` of the matching skill, then only the reference files it points to:
+Skills (read `.github/skills/<name>/SKILL.md` first, then only its referenced files):
 
 - `csharp-async` — modernizing async code and fixing sync-over-async
 - `csharp-xunit` — backfilling test coverage
 - `csharp-docs` — documentation passes over public APIs
 - `ef-core` — data-access cleanup (DbContext, queries, migrations)
 
-## Review loop
+## Review, documentation & changelog
 
-After each batch of cleanup changes, ALWAYS invoke the `C# Code Reviewer` subagent to review the diff before declaring the task done. Apply its Critical and High findings yourself, then re-run the reviewer until the verdict is **Approve** or **Approve with changes**. This complements — it does not replace — running tests after each modification.
-
-If the cleanup also touched GitHub Actions workflows (`.github/workflows/*.yml` or composite actions), additionally invoke the `GitHub Actions Reviewer` subagent on those files and apply its Critical and High findings before finishing.
-
-## Documentation & changelog
-
-After the reviewer verdict passes:
-
-- If the cleanup changed public APIs, observable behavior, or project conventions, invoke the `SE Technical Writer` subagent to update the affected docs under `docs/` and add the `CHANGELOG.md` entry under `[Unreleased]`.
-- For routine cleanups with no behavior change (dead-code removal, formatting, modernization that preserves behavior), skip the writer and append a one-line entry yourself to the root `CHANGELOG.md` under `[Unreleased]` → `### Changed` (or `### Removed`), briefly stating what was cleaned up.
+After each batch of cleanup changes, follow the **implementation-agent contract** in `.github/copilot-instructions.md`; your reviewer is the `C# Code Reviewer`. The review loop complements — it does not replace — running tests after each modification. Exception: for routine cleanups with no behavior change (dead-code removal, formatting, modernization that preserves behavior), skip the writer and append a one-line entry yourself to the root `CHANGELOG.md` under `[Unreleased]` → `### Changed` (or `### Removed`), briefly stating what was cleaned up.
 
 ## Core Tasks
 

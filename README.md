@@ -53,9 +53,10 @@ The two trees are parallel and **self-contained** — nothing in `.github/` refe
 │   │   │   ├── sources.json                # pinned upstream doc shas + @ngrx/signals version
 │   │   │   ├── scripts/check-updates.mjs   # drift check against the live NgRx docs
 │   │   │   └── references/                 # read on demand, not loaded up front
-│   │   └── prd/                  # PRDs + feature → epics/stories breakdown (see below)
-│   │       ├── SKILL.md
-│   │       └── references/                 # prd-template, story-breakdown, github-issues
+│   │   ├── prd/                  # PRDs + feature → epics/stories breakdown (see below)
+│   │   │   ├── SKILL.md
+│   │   │   └── references/                 # prd-template, story-breakdown, github-issues
+│   │   └── technical-writing/              # doc-type templates + writing process, read on demand by se-technical-writer
 │   ├── agents/                   # Subagents
 │   │   ├── csharp-code-reviewer.md         # Sonnet (xhigh), read-only C#/.NET review
 │   │   ├── angular-code-reviewer.md        # Sonnet (xhigh), read-only Angular review
@@ -102,7 +103,7 @@ Framework specifics live in `.claude/rules/` (Claude Code) and `.github/instruct
 
 **Feature specs & backlog breakdown**: the `prd` skill plus a PRD-generator agent turn a feature request into a Product Requirements Document — measurable success criteria and a breakdown into epics and user stories with acceptance criteria, priorities (P0/P1/P2), t-shirt estimates, and dependencies — written to `docs/prd/`, with optional GitHub-issue creation (`gh`) after you approve. On Claude Code the main session delegates to the `prd-generator` subagent; on Copilot the **PRD Generator** chat mode interviews you directly and hands off to the **Planner Expert**, which plans against the PRD's story IDs.
 
-**Skills** (both harnesses): `angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`, `prd`.
+**Skills** (both harnesses): `angular-developer`, `csharp-async`, `csharp-docs`, `csharp-xunit`, `ef-core`, `github-actions-efficiency`, `github-actions-hardening`, `github-actions-runtime-upgrade-conventions`, `microsoft-agent-framework`, `microsoft-docs`, `ngrx-signal-store`, `prd`, `technical-writing`.
 
 ---
 
