@@ -33,7 +33,7 @@ Skills (read `.github/skills/<name>/SKILL.md` first, then only its referenced fi
 
 # Review & documentation
 
-Follow the **implementation-agent contract** in `.github/copilot-instructions.md`: review the diff with the `C# Code Reviewer` subagent until the verdict passes (plus the `GitHub Actions Reviewer` if workflows changed), then invoke the `SE Technical Writer` for docs and the `CHANGELOG.md` entry.
+Follow the **implementation-agent contract** in `.github/copilot-instructions.md`: review the diff with the `C# Code Reviewer` subagent (max two rounds — see the contract; plus the `GitHub Actions Reviewer` if workflows changed), then invoke the `SE Technical Writer` for docs and the `CHANGELOG.md` entry.
 
 # General C# Development
 
