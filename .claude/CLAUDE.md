@@ -68,7 +68,7 @@ Rules auto-load when you edit a matching file; the globs live in each rule's fro
 
 ## Delegation rules
 
-Every subagent is pinned to extra-high reasoning effort; model, tools, and preloaded skills live in each agent's frontmatter.
+Every subagent is pinned to extra-high reasoning effort; model, tools, and preloaded skills live in each agent's frontmatter. Reviewer loops are capped: apply Critical/High findings, re-review only the changed files, at most two rounds, then surface anything still open to the user.
 
 - **When the user asks to write a PRD, spec a feature, define requirements, or break a feature into epics/user stories**, delegate to `prd-generator` — do not write PRDs inline. Its report always starts with a `PRD-STATUS:` line. If it starts `PRD-STATUS: NEEDS-INPUT`, show its questions to the user verbatim (do not answer them yourself) and re-invoke the agent with the answers. It only creates GitHub issues when re-invoked with a statement that the user explicitly approved issue creation for the PRD path. `docs/prd/` is owned by `prd-generator`; a PRD is a pre-implementation artifact — writing one gets no `se-technical-writer` delegation and no changelog entry. Implementation plans for a feature that has a PRD should reference its story IDs (`US-xxx`).
 - **After implementing or modifying C# code**, delegate a quality review to `csharp-code-reviewer`. It reports findings; it does not edit files.
@@ -95,3 +95,4 @@ dotnet format    # apply .editorconfig formatting
 ## Maintenance
 
 - `/ngrx-signals-sync` — check the official NgRx Signals docs for drift and refresh the `ngrx-signal-store` skill. Cheap and silent when nothing changed; when something did, it leaves the diff in the working tree for review rather than committing.
+- `/repo-audit` — verify the two harness trees still mirror each other (skills, rules↔instructions, agent twins and model parity, registries) and lint config cost hygiene. Cheap and silent when clean; report-only by default; `--fix` applies only mechanical repairs and leaves the diff for review.

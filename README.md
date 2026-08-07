@@ -32,7 +32,7 @@ The two trees are parallel and **self-contained** — nothing in `.github/` refe
 │   ├── CLAUDE.md                 # Always-loaded project memory: C# + Angular standards, delegation rules
 │   ├── rules/                    # Path-scoped rules (auto-apply when a matching file is edited)
 │   │   ├── csharp.md                       → **/*.cs
-│   │   ├── aspnet-rest-apis.md             → **/*.cs, **/*.json
+│   │   ├── aspnet-rest-apis.md             → **/*.cs
 │   │   ├── azure-functions-csharp.md       → **/*.cs, **/host.json, **/local.settings.json, **/*.csproj
 │   │   ├── blazor-wasm.md                  → **/*.razor, **/*.razor.cs, **/*.razor.css
 │   │   ├── csharp-mcp-server.md            → **/*.cs, **/*.csproj
@@ -64,7 +64,8 @@ The two trees are parallel and **self-contained** — nothing in `.github/` refe
 │   │   ├── prd-generator.md                # Sonnet (xhigh), writes PRDs under docs/prd/
 │   │   └── se-technical-writer.md          # Sonnet (xhigh), writes docs under docs/
 │   ├── commands/                 # Slash commands
-│   │   └── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
+│   │   ├── ngrx-signals-sync.md            # refresh the NgRx skill from upstream docs
+│   │   └── repo-audit.md                   # audit cross-harness parity + cost hygiene
 │   ├── settings.json             # Model, effort (xhigh) + MCP defaults
 │   └── skills-lock.json          # pin for the installed angular-developer skill
 │
@@ -72,11 +73,12 @@ The two trees are parallel and **self-contained** — nothing in `.github/` refe
 │   ├── copilot-instructions.md   # Repository instructions: standards + agent/skill registry
 │   ├── instructions/             # Path-scoped instructions (applyTo globs) — twins of .claude/rules/
 │   ├── agents/                   # Custom agents (planner, experts, reviewers, PRD generator, writer)
-│   ├── prompts/                  # Reusable prompts (ngrx-signals-sync)
+│   ├── prompts/                  # Reusable prompts (ngrx-signals-sync, repo-audit)
 │   └── skills/                   # Content-identical mirror of .claude/skills/
 │
 ├── .vscode/mcp.json              # MCP servers for GitHub Copilot in VS Code
 ├── .mcp.json                     # MCP servers for Claude Code
+├── scripts/repo-audit.mjs        # repo-maintenance tooling — not part of either drop-in tree
 └── LICENSE                       # MIT
 ```
 
@@ -156,6 +158,19 @@ A `/loop` only fires while a Claude Code session is open, so treat it as a conve
 
 ---
 
+## Keeping the two trees in sync
+
+Parity between `.claude/` and `.github/` is enforced by an audit, not by memory:
+
+```
+/repo-audit                    # Claude Code — report drift; --fix applies mechanical repairs
+node scripts/repo-audit.mjs    # the same check directly (CI: fail on exit 10)
+```
+
+It verifies the mirrored `skills/` trees (tolerating Windows CRLF noise), every rule/instruction pair, agent twins and their model parity, the registries, and a few cost-hygiene lints. Exit `0` is clean, `10` is findings, `1` is a failed run — the same contract as the NgRx sync. On the Copilot side the same flow is the `repo-audit` prompt. Like everything else here, it never commits: findings become working-tree edits for a human to review.
+
+---
+
 ## MCP servers
 
 Configured in `.mcp.json` for Claude Code (`.claude/settings.json` sets `enableAllProjectMcpServers: true`) and in [`.vscode/mcp.json`](.vscode/mcp.json) for GitHub Copilot in VS Code — the same four servers in both:
@@ -183,15 +198,15 @@ Configured in `.mcp.json` for Claude Code (`.claude/settings.json` sets `enableA
 2. Copilot loads `.github/copilot-instructions.md` automatically; the path-scoped `instructions/*.instructions.md` apply via their `applyTo` globs.
 3. The custom agents appear in the VS Code agents dropdown. Intended flow: (optional) spec with **PRD Generator** → plan with **Planner Expert** → hand off to the recommended implementation expert (C#, Angular, MCP Server, Full-Stack, Janitor) → its reviewer subagent checks the work → **SE Technical Writer** documents it and updates `CHANGELOG.md`.
 
-Requirements: Node 18+ for the NgRx sync script (it uses global `fetch` and has no dependencies); the [`gh` CLI](https://cli.github.com) if you want PRD stories turned into GitHub issues.
+Requirements: Node 18+ for the NgRx sync and repo-audit scripts (both use only Node built-ins and have no dependencies); the [`gh` CLI](https://cli.github.com) if you want PRD stories turned into GitHub issues.
 
 ---
 
 ## Conventions for contributors
 
-- **Both harnesses, always:** a change to standards, skills, or agents lands in `.claude/` **and** its `.github/` twin in the same PR. Sync points: `CLAUDE.md` ↔ `copilot-instructions.md` registries, the two `skills/` trees (keep the mirrored files content-identical — verify with `git hash-object`), and this README's structure diagram and lists.
+- **Both harnesses, always:** a change to standards, skills, or agents lands in `.claude/` **and** its `.github/` twin in the same PR. Sync points: `CLAUDE.md` ↔ `copilot-instructions.md` registries, the two `skills/` trees (keep the mirrored files content-identical — verify with `/repo-audit`, or `node scripts/repo-audit.mjs` directly), and this README's structure diagram and lists.
 - **Rules / instructions:** a `.claude/rules/*.md` file with a `paths:` block list applies only to matching files; without `paths:` it loads at launch for every session. The Copilot twin is an `applyTo:`-scoped `.github/instructions/*.instructions.md`.
 - **Subagents (Claude):** `.claude/agents/*.md` frontmatter uses `name`, `description`, a `model` (`opus`/`sonnet`/`haiku`/`inherit`), an `effort` level (`low`/`medium`/`high`/`xhigh`/`max` — this repo pins every agent to `xhigh`, matching the `"effortLevel": "xhigh"` default in `settings.json`), and either a comma-separated `tools` list or a `skills:` list.
-- **Custom agents (Copilot):** `.github/agents/*.agent.md` frontmatter uses a display-case `name`, `description`, `model` (kept in parity with the Claude twin), lowercase `tools` ids, and optional `argument-hint`, `handoffs`, and `agents`. There is no effort key — Copilot has no equivalent yet.
+- **Custom agents (Copilot):** `.github/agents/*.agent.md` frontmatter uses a display-case `name`, `description`, `model` (kept in **tier parity** with the Claude twin by default; a per-harness cost override is allowed when it is recorded in `modelParityOverrides` in `scripts/repo-audit.mjs` **and** in a docs record — see `docs/2026-08-repo-audit.md`), lowercase `tools` ids, and optional `argument-hint`, `handoffs`, and `agents`. There is no effort key — Copilot has no equivalent yet.
 - **Skills:** one folder per skill containing `SKILL.md` with `name` and `description` frontmatter. Keep `SKILL.md` under ~500 lines; anything longer belongs in `references/`, pointed to from a table that says *when* to read each file.
 - **Never hand-edit the shas in `sources.json`.** They are machine-maintained — run `node .claude/skills/ngrx-signal-store/scripts/check-updates.mjs --pin`.

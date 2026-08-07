@@ -1,5 +1,7 @@
 # August 2026 Reasoning-Effort Defaults
 
+> **Update 2026-08-06**: the Copilot half of [section 3](#3-se-technical-writer-haiku--sonnet) is superseded — the Copilot writer moved back to Haiku 4.5 as a documented per-harness cost override (Copilot has no effort key, so the Haiku-ignores-effort concern doesn't apply there). The Claude side is unchanged: Sonnet + `xhigh`. A fifth subagent (`prd-generator`) now also pins `xhigh`. See [2026-08-repo-audit.md](2026-08-repo-audit.md).
+
 **Date**: 2026-08-02
 **Claude Code harness**: `.claude/settings.json`, `.claude/agents/csharp-code-reviewer.md`, `.claude/agents/angular-code-reviewer.md`, `.claude/agents/github-actions-reviewer.md`, `.claude/agents/se-technical-writer.md`, `.claude/CLAUDE.md`, `README.md`
 **GitHub Copilot harness**: `.github/agents/se-technical-writer.agent.md` (model bump only — see [section 4](#4-github-copilot-no-per-agent-effort-key-yet))

@@ -31,7 +31,7 @@ These rules target **standalone Blazor WebAssembly** apps (`blazorwasm` template
 - Share state via DI-registered **state container services** (in WASM, scoped ≈ singleton for the app's lifetime) and cascading values for ancestor→descendant flow. Blazor has no opinionated store; keep containers simple and notify with events/`Action` callbacks that call `StateHasChanged`.
 - Persist across reloads with `localStorage` (survives restarts, shared across tabs) or `sessionStorage` (per-tab) via JS interop or a package such as Blazored.LocalStorage.
 - **`ProtectedLocalStorage`/`ProtectedSessionStorage` are server-side Blazor only** — they rely on server Data Protection and must never be suggested in WASM.
-- Client-side storage is user-visible and tamperable — no sensitive data, ever. Durable cross-device state belongs in server storage behind a web API.
+- Client-side storage is user-visible and tamperable — no sensitive data, ever. Durable, cross-device state belongs in server storage behind a web API.
 
 ## HTTP and APIs
 

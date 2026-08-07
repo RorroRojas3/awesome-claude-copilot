@@ -1,7 +1,6 @@
 ---
 paths:
   - "**/*.cs"
-  - "**/*.json"
 ---
 
 # ASP.NET REST API Development

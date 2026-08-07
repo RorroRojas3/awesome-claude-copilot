@@ -62,7 +62,7 @@ Then run all four gates: `dotnet build`, `dotnet test`, `ng build`, and `ng test
 Check each expert's report for its reviewer verdict:
 
 - Report includes **Approve** or **Approve with changes** → accept it. Do not re-review that side.
-- Verdict **missing** (the expert could not invoke its reviewer in this client) or **Request changes** → invoke that side's reviewer (`C# Code Reviewer` / `Angular Code Reviewer`) directly on its changed files, re-delegate Critical and High findings to the owning expert, and re-check. Iterate until the verdict passes.
+- Verdict **missing** (the expert could not invoke its reviewer in this client) or **Request changes** → invoke that side's reviewer (`C# Code Reviewer` / `Angular Code Reviewer`) directly on its changed files, re-delegate Critical and High findings to the owning expert, and re-check **at most once**. If a side still does not pass after its second round, stop and surface the outstanding findings in your report.
 
 Both sides must end with a passing verdict. Review never runs twice per side — and never zero times.
 
